@@ -38,7 +38,6 @@ experiments |>
 ```
 
 
-
 ## Consistent Colors and Theming
 
 Define a consistent color set for the display of the `algorithm` variable throughout the analysis:
