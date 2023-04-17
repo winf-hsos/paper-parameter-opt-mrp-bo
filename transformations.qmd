@@ -1,0 +1,85 @@
+# Transformations
+
+This chapter contains the data transformations we performed before analyzing the data.
+
+## Data Type Conversion
+
+Before we analyze the data, we need to convert some of the columns.
+
+```{r}
+#| code-fold: false
+library(tidyverse)
+
+experiments <- read_csv("data/experiments.csv")
+
+algorithm_levels <- c("sobol", "gpei", "turbo", "cma-es")
+algorithm_labels <- c("Sobol", "GPEI", "TurBO", "CMA-ES")
+
+experiments <- 
+  experiments |> 
+  mutate(bom_id = factor(bom_id),
+         replication = as.integer(replication),
+         budget = as_factor(budget),
+         candidate_id = as.integer(candidate_id),
+         num_trials = as.integer(num_trials),
+         num_candidates = as.integer(num_candidates),
+         algorithm = factor(algorithm, levels = algorithm_levels, labels = algorithm_labels)
+         )
+
+experiments 
+```
+
+We will load the transformed data from an R-data source (RDS) file in the following chapters:
+
+```{r}
+#| code-fold: false
+experiments |> 
+  saveRDS("data/experiments.rds")
+```
+
+
+
+## Consistent Colors and Theming
+
+Define a consistent color set for the display of the `algorithm` variable throughout the analysis:
+
+```{r}
+#| code-fold: false
+# Consistent colors
+library(ggsci)
+
+algorithm_colors <- c(
+  "Sobol" = pal_aaas()(4)[1],
+  "GPEI" = pal_aaas()(4)[2],
+  "TurBO" = pal_aaas()(4)[3],
+  "CMA-ES" = pal_aaas()(4)[4]
+)
+```
+
+Define the globally used theme:
+
+```{r}
+#| code-fold: false
+theme_simbo <- function (base_size = 12, base_family = "Roboto Condensed") {
+  half_line <- base_size/2
+  theme_bw()
+}
+
+theme_set(theme_simbo())
+```
+
+Example:
+
+```{r}
+library(scales)
+
+experiments |> 
+  ggplot() +
+  aes(x = algorithm, fill = algorithm) +
+  geom_bar() +
+  scale_fill_manual(values = algorithm_colors) +
+  scale_y_continuous(labels = comma) +
+  labs(x = "Algorithm", y = "Number of Candidates", fill = "Algorithm")
+```
+
+

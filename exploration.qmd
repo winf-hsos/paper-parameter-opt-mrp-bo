@@ -1,0 +1,26 @@
+# Exploration
+
+In this chapter, we explore the data.
+
+```{r}
+source("_common.R")
+```
+
+## Experiments Overview
+
+The following table show an overview of all experiments conducted.
+
+```{r}
+experiments |> 
+  group_by(experiment_id, bom_id, algorithm, budget, replication) |> 
+  summarize(num_candidates = n(),
+            min_costs = min(candidate_y_costs_mean)) |> 
+  ungroup() |> 
+  group_by(algorithm, bom_id, budget) |>
+  summarize(num_replications = n_distinct(replication),
+            total_candidates = sum(num_candidates)
+            ) |>
+  ungroup() |> 
+  arrange(bom_id, algorithm, budget)
+```
+

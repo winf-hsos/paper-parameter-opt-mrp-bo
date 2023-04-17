@@ -1,0 +1,55 @@
+# Summary Plots
+
+This chapter contains high-level summary plots with the main results across the different bill of materials and algorithms and their results.
+
+```{r}
+source("_common.R")
+```
+
+
+## Best Results by BOM and Algorithm (Boxplots)
+
+```{r}
+create_boxplots_per_bom <- function(p_bom_id) {
+  
+  p <- experiments |> 
+    filter(bom_id == p_bom_id) |> 
+    group_by(experiment_id, algorithm, budget, replication) |>
+    summarize(min_costs = min(candidate_y_costs_mean)) |> 
+  
+    ggplot() +
+    aes(x = budget, y = min_costs, fill = algorithm) + 
+    geom_boxplot() +
+    scale_fill_manual(values = algorithm_colors) +
+    scale_y_continuous(labels = comma) +
+    ggtitle(paste0("Distribution of best costs per algorithm for BOM ", p_bom_id)) +
+    labs(x = "Budget", y = "Best Costs", fill = "Algorithm")
+    #coord_cartesian(ylim = c(0, 40000)) 
+
+  return(p)
+}
+
+create_boxplots_per_bom("4")
+```
+
+- For **GPEI**, the best point improves with more evaluation budget. At the same time, the results become more consistent with less variation. The best point is more reliably found.
+
+- **CMA-ES** shows the largest variation as shown by the height of the boxes. Good points are not always found. This could be due to the fact that the algorithm can get stuck in a local minimum. CMA-ES is also the only algorithm with consistent large outliers, which underlines this hypothesis.
+
+
+```{r}
+create_boxplots_per_bom("10")
+```
+
+```{r}
+create_boxplots_per_bom("20")
+```
+
+```{r}
+create_boxplots_per_bom("50")
+```
+
+```{r}
+create_boxplots_per_bom("100")
+```
+

@@ -1,0 +1,21 @@
+# Packages and Data
+
+## Required packages
+
+```{r}
+#| warning: false
+#| eval: false
+install.packages("tidyverse")
+install.packages("scales")
+install.packages("ggsci")
+install.packages("cowplot")
+```
+
+## Data
+
+The data consists of the experiment's results that were run with the SimBO framework. SimBO creates raw files are in JSON format, which are further pre-processed for analysis. The following files are the result of the pre-processing, which is done in Python:
+
+-  `experiments.csv`: Contains one line for each candidate of an experiment. Meta data includes the technical experiment id, the bill of materials, the evaluation budget, the algorithm that was used for optimization, and the outcomes costs and service level (mean and standard error of mean).
+
+
+

@@ -1,0 +1,72 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "MRP Parameter Optimization with BO",
+    "section": "",
+    "text": "This website contains the data analysis we performed for the paper Parameter optimization of a stochastic material requirements planning simulation using Bayesian optimization. The paper was published at the ASIM Conference 2023 “Simulation in Production and Logistics”.\nYou can download the data from the GitHub repository."
+  },
+  {
+    "objectID": "data.html",
+    "href": "data.html",
+    "title": "1  Packages and Data",
+    "section": "",
+    "text": "Code\ninstall.packages(\"tidyverse\")\ninstall.packages(\"scales\")\ninstall.packages(\"ggsci\")\ninstall.packages(\"cowplot\")"
+  },
+  {
+    "objectID": "data.html#data",
+    "href": "data.html#data",
+    "title": "1  Packages and Data",
+    "section": "1.2 Data",
+    "text": "1.2 Data\nThe data consists of the experiment’s results that were run with the SimBO framework. SimBO creates raw files are in JSON format, which are further pre-processed for analysis. The following files are the result of the pre-processing, which is done in Python:\n\nexperiments.csv: Contains one line for each candidate of an experiment. Meta data includes the technical experiment id, the bill of materials, the evaluation budget, the algorithm that was used for optimization, and the outcomes costs and service level (mean and standard error of mean)."
+  },
+  {
+    "objectID": "transformations.html",
+    "href": "transformations.html",
+    "title": "2  Transformations",
+    "section": "",
+    "text": "This chapter contains the data transformations we performed before analyzing the data."
+  },
+  {
+    "objectID": "transformations.html#data-type-conversion",
+    "href": "transformations.html#data-type-conversion",
+    "title": "2  Transformations",
+    "section": "2.1 Data Type Conversion",
+    "text": "2.1 Data Type Conversion\nBefore we analyze the data, we need to convert some of the columns.\n\nlibrary(tidyverse)\n\nexperiments <- read_csv(\"data/experiments.csv\")\n\nalgorithm_levels <- c(\"sobol\", \"gpei\", \"turbo\", \"cma-es\")\nalgorithm_labels <- c(\"Sobol\", \"GPEI\", \"TurBO\", \"CMA-ES\")\n\nexperiments <- \n  experiments |> \n  mutate(bom_id = factor(bom_id),\n         replication = as.integer(replication),\n         budget = as_factor(budget),\n         candidate_id = as.integer(candidate_id),\n         num_trials = as.integer(num_trials),\n         num_candidates = as.integer(num_candidates),\n         algorithm = factor(algorithm, levels = algorithm_levels, labels = algorithm_labels)\n         )\n\nexperiments \n\n\n\n  \n\n\n\nWe will load the transformed data from an R-data source (RDS) file in the following chapters:\n\nexperiments |> \n  saveRDS(\"data/experiments.rds\")"
+  },
+  {
+    "objectID": "transformations.html#consistent-colors-and-theming",
+    "href": "transformations.html#consistent-colors-and-theming",
+    "title": "2  Transformations",
+    "section": "2.2 Consistent Colors and Theming",
+    "text": "2.2 Consistent Colors and Theming\nDefine a consistent color set for the display of the algorithm variable throughout the analysis:\n\n# Consistent colors\nlibrary(ggsci)\n\nalgorithm_colors <- c(\n  \"Sobol\" = pal_aaas()(4)[1],\n  \"GPEI\" = pal_aaas()(4)[2],\n  \"TurBO\" = pal_aaas()(4)[3],\n  \"CMA-ES\" = pal_aaas()(4)[4]\n)\n\nDefine the globally used theme:\n\ntheme_simbo <- function (base_size = 12, base_family = \"Roboto Condensed\") {\n  half_line <- base_size/2\n  theme_bw()\n}\n\ntheme_set(theme_simbo())\n\nExample:\n\n\nCode\nlibrary(scales)\n\nexperiments |> \n  ggplot() +\n  aes(x = algorithm, fill = algorithm) +\n  geom_bar() +\n  scale_fill_manual(values = algorithm_colors) +\n  scale_y_continuous(labels = comma) +\n  labs(x = \"Algorithm\", y = \"Number of Candidates\", fill = \"Algorithm\")"
+  },
+  {
+    "objectID": "exploration.html",
+    "href": "exploration.html",
+    "title": "3  Exploration",
+    "section": "",
+    "text": "In this chapter, we explore the data."
+  },
+  {
+    "objectID": "exploration.html#experiments-overview",
+    "href": "exploration.html#experiments-overview",
+    "title": "3  Exploration",
+    "section": "3.1 Experiments Overview",
+    "text": "3.1 Experiments Overview\nThe following table show an overview of all experiments conducted.\n\n\nCode\nexperiments |> \n  group_by(experiment_id, bom_id, algorithm, budget, replication) |> \n  summarize(num_candidates = n(),\n            min_costs = min(candidate_y_costs_mean)) |> \n  ungroup() |> \n  group_by(algorithm, bom_id, budget) |>\n  summarize(num_replications = n_distinct(replication),\n            total_candidates = sum(num_candidates)\n            ) |>\n  ungroup() |> \n  arrange(bom_id, algorithm, budget)"
+  },
+  {
+    "objectID": "summary_plots.html",
+    "href": "summary_plots.html",
+    "title": "4  Summary Plots",
+    "section": "",
+    "text": "This chapter contains high-level summary plots with the main results across the different bill of materials and algorithms and their results."
+  },
+  {
+    "objectID": "summary_plots.html#best-results-by-bom-and-algorithm-boxplots",
+    "href": "summary_plots.html#best-results-by-bom-and-algorithm-boxplots",
+    "title": "4  Summary Plots",
+    "section": "4.1 Best Results by BOM and Algorithm (Boxplots)",
+    "text": "4.1 Best Results by BOM and Algorithm (Boxplots)\n\n\nCode\ncreate_boxplots_per_bom <- function(p_bom_id) {\n  \n  p <- experiments |> \n    filter(bom_id == p_bom_id) |> \n    group_by(experiment_id, algorithm, budget, replication) |>\n    summarize(min_costs = min(candidate_y_costs_mean)) |> \n  \n    ggplot() +\n    aes(x = budget, y = min_costs, fill = algorithm) + \n    geom_boxplot() +\n    scale_fill_manual(values = algorithm_colors) +\n    scale_y_continuous(labels = comma) +\n    ggtitle(paste0(\"Distribution of best costs per algorithm for BOM \", p_bom_id)) +\n    labs(x = \"Budget\", y = \"Best Costs\", fill = \"Algorithm\")\n    #coord_cartesian(ylim = c(0, 40000)) \n\n  return(p)\n}\n\ncreate_boxplots_per_bom(\"4\")\n\n\n\n\n\n\nFor GPEI, the best point improves with more evaluation budget. At the same time, the results become more consistent with less variation. The best point is more reliably found.\nCMA-ES shows the largest variation as shown by the height of the boxes. Good points are not always found. This could be due to the fact that the algorithm can get stuck in a local minimum. CMA-ES is also the only algorithm with consistent large outliers, which underlines this hypothesis.\n\n\n\nCode\ncreate_boxplots_per_bom(\"10\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"20\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"50\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"100\")"
+  }
+]
