@@ -16,6 +16,7 @@ book:
     - transformations.qmd
     - exploration.qmd
     - summary_plots.qmd
+    - sobol.qmd
     - references.qmd
 
 bibliography: references.bib

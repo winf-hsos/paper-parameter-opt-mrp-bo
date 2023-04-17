@@ -1,0 +1,47 @@
+# Sobol
+
+This chapter contains analysis for the Sobol algorithm.
+
+
+```{r}
+source("_common.R")
+```
+
+## Costs Distribution
+
+These plots are to verify the distribution of the costs. Since Sobol is space covering, the result should be representative.
+
+```{r}
+p_bom_id = "4"
+
+create_costs_hist <- function(p_bom_id) {
+  experiments |> 
+  filter(algorithm == "Sobol") |> 
+  filter(bom_id == p_bom_id) |> 
+  ggplot() +
+  aes(x = candidate_y_costs_mean) +
+  geom_histogram() +
+  scale_x_continuous(labels = comma) +
+  labs(x = "Costs", y = "Count") +
+  ggtitle(paste0("Distribution of costs outcome for BOM ", p_bom_id))
+}
+
+create_costs_hist("4")
+```
+```{r}
+create_costs_hist("10")
+```
+
+
+```{r}
+create_costs_hist("20")
+```
+
+```{r}
+create_costs_hist("50")
+```
+
+```{r}
+create_costs_hist("100")
+```
+
