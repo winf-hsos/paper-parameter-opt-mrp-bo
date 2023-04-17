@@ -1,6 +1,6 @@
 project:
   type: book
-  output-dir: web
+  output-dir: docs
 
 book:
   title: "MRP Parameter Optimization with BO"
