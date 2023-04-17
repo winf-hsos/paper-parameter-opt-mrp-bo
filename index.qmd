@@ -2,4 +2,4 @@
 
 This website contains the data analysis we performed for the paper *Parameter optimization of a stochastic material requirements planning simulation using Bayesian optimization*. The paper was published at the [ASIM Conference 2023 "Simulation in Production and Logistics"](http://www.asim-fachtagung-spl.de/asim2023/en/).
 
-You can download the data from the [GitHub repository](https://github.com/winf-hsos/paper-parameter-opt-mrp-bo).
+You can download the data from the [GitHub repository](https://github.com/winf-hsos/paper-parameter-opt-mrp-bo/tree/main/data).
