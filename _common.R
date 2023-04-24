@@ -7,10 +7,11 @@ experiments <- readRDS("data/experiments.rds")
 
 # Consistent colors
 algorithm_colors <- c(
-  "Sobol" = pal_aaas()(4)[1],
-  "GPEI" = pal_aaas()(4)[2],
-  "TurBO" = pal_aaas()(4)[3],
-  "CMA-ES" = pal_aaas()(4)[4]
+  "Sobol" = pal_aaas()(5)[1],
+  "GPEI" = pal_aaas()(5)[2],
+  "TurBO" = pal_aaas()(5)[3],
+  "CMA-ES" = pal_aaas()(5)[4],
+  "SAASBO" = pal_aaas()(5)[5]
 )
 
 theme_simbo <- function (base_size = 12, base_family = "Roboto Condensed") {

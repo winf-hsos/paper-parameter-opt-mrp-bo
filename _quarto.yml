@@ -1,6 +1,7 @@
 project:
   type: book
   output-dir: docs
+  pre-render: load_and_transform_data.R
 
 book:
   title: "MRP Parameter Optimization with BO"

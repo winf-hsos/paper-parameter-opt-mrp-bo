@@ -9,11 +9,12 @@ Before we analyze the data, we need to convert some of the columns.
 ```{r}
 #| code-fold: false
 library(tidyverse)
+library(ggsci)
 
 experiments <- read_csv("data/experiments.csv")
 
-algorithm_levels <- c("sobol", "gpei", "turbo", "cma-es")
-algorithm_labels <- c("Sobol", "GPEI", "TurBO", "CMA-ES")
+algorithm_levels <- c("sobol", "gpei", "turbo", "cma-es", "saasbo")
+algorithm_labels <- c("Sobol", "GPEI", "TurBO", "CMA-ES", "SAASBO")
 
 experiments <- 
   experiments |> 
@@ -26,7 +27,8 @@ experiments <-
          algorithm = factor(algorithm, levels = algorithm_levels, labels = algorithm_labels)
          )
 
-experiments 
+experiments |> 
+  count(algorithm, sort = TRUE)
 ```
 
 We will load the transformed data from an R-data source (RDS) file in the following chapters:
@@ -45,13 +47,12 @@ Define a consistent color set for the display of the `algorithm` variable throug
 ```{r}
 #| code-fold: false
 # Consistent colors
-library(ggsci)
-
 algorithm_colors <- c(
-  "Sobol" = pal_aaas()(4)[1],
-  "GPEI" = pal_aaas()(4)[2],
-  "TurBO" = pal_aaas()(4)[3],
-  "CMA-ES" = pal_aaas()(4)[4]
+  "Sobol" = pal_aaas()(5)[1],
+  "GPEI" = pal_aaas()(5)[2],
+  "TurBO" = pal_aaas()(5)[3],
+  "CMA-ES" = pal_aaas()(5)[4],
+  "SAASBO" = pal_aaas()(5)[5]
 )
 ```
 

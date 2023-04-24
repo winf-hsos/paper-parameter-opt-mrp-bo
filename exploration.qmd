@@ -17,7 +17,7 @@ experiments |>
             min_costs = min(candidate_y_costs_mean)) |> 
   ungroup() |> 
   group_by(algorithm, bom_id, budget) |>
-  summarize(num_replications = n_distinct(replication),
+  summarize(num_replications = n_distinct(experiment_id, replication),
             total_candidates = sum(num_candidates)
             ) |>
   ungroup() |> 
