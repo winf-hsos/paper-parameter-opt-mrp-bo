@@ -17,6 +17,7 @@ book:
     - transformations.qmd
     - exploration.qmd
     - summary_plots.qmd
+    - convergence.qmd
     - sobol.qmd
     - references.qmd
 

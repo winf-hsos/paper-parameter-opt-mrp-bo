@@ -70,17 +70,31 @@
     "text": "4.1 Best Results by BOM and Algorithm (Boxplots)\n\n\nCode\ncreate_boxplots_per_bom <- function(p_bom_id) {\n  \n  p <- experiments |> \n    filter(bom_id == p_bom_id) |> \n    group_by(experiment_id, algorithm, budget, replication) |>\n    summarize(min_costs = min(candidate_y_costs_mean)) |> \n  \n    ggplot() +\n    aes(x = budget, y = min_costs, fill = algorithm) + \n    geom_boxplot() +\n    scale_fill_manual(values = algorithm_colors) +\n    scale_y_continuous(labels = comma) +\n    ggtitle(paste0(\"Distribution of best costs per algorithm for BOM \", p_bom_id)) +\n    labs(x = \"Budget\", y = \"Best Costs\", fill = \"Algorithm\")\n    #coord_cartesian(ylim = c(0, 40000)) \n\n  return(p)\n}\n\ncreate_boxplots_per_bom(\"4\")\n\n\n\n\n\n\nFor GPEI, the best point improves with more evaluation budget. At the same time, the results become more consistent with less variation. The best point is more reliably found.\nCMA-ES shows the largest variation as shown by the height of the boxes. Good points are not always found. This could be due to the fact that the algorithm can get stuck in a local minimum. CMA-ES is also the only algorithm with consistent large outliers, which underlines this hypothesis.\n\n\n\nCode\ncreate_boxplots_per_bom(\"10\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"20\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"50\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"100\")"
   },
   {
+    "objectID": "convergence.html",
+    "href": "convergence.html",
+    "title": "5  Convergence",
+    "section": "",
+    "text": "In this chapter, we examine how the different algorithms converge in comparison."
+  },
+  {
+    "objectID": "convergence.html#best-points-found-by-algorithm",
+    "href": "convergence.html#best-points-found-by-algorithm",
+    "title": "5  Convergence",
+    "section": "6.1 Best Points Found By Algorithm",
+    "text": "6.1 Best Points Found By Algorithm\n\n\nCode\ntop_values <-\nexperiments |> \n  group_by(experiment_id, replication, algorithm, bom_id, budget) |> \n  summarise(min_costs = min(candidate_y_costs_mean),\n            sl = candidate_y_service_level_mean[which.min(candidate_y_costs_mean)]) |> \n  ungroup() |> \n  arrange(bom_id, budget, min_costs) |>\n  group_by(bom_id, budget) |> \n  top_n(20, -min_costs) |>  \n  filter(bom_id == \"4\", budget == 100) |> \n  ungroup()\n\n\n\ntop_values <- top_values |> \n  mutate(row_number = row_number())\n\n  ggplot(top_values) +\n    aes(x = factor(row_number), y = min_costs, fill = algorithm) +\n    geom_col() +\n    scale_x_discrete(labels = top_values$algorithm) +\n    scale_y_continuous(labels = comma) +\n    scale_fill_manual(values = algorithm_colors) +\n    labs(x = \"Algorithm\") +\n    theme_bw() +\n    coord_flip() \n\n\n\n\n\nCode\ntop_values$algorithm\n\n\n [1] TurBO  TurBO  TurBO  SAASBO TurBO  TurBO  TurBO  SAASBO CMA-ES CMA-ES\n[11] TurBO  CMA-ES CMA-ES TurBO  TurBO  CMA-ES TurBO  CMA-ES TurBO  SAASBO\nLevels: Sobol GPEI TurBO CMA-ES SAASBO"
+  },
+  {
     "objectID": "sobol.html",
     "href": "sobol.html",
-    "title": "5  Sobol",
+    "title": "6  Sobol",
     "section": "",
     "text": "This chapter contains analysis for the Sobol algorithm."
   },
   {
     "objectID": "sobol.html#costs-distribution",
     "href": "sobol.html#costs-distribution",
-    "title": "5  Sobol",
-    "section": "5.1 Costs Distribution",
-    "text": "5.1 Costs Distribution\nThese plots are to verify the distribution of the costs. Since Sobol is space covering, the result should be representative.\n\n\nCode\np_bom_id = \"4\"\n\ncreate_costs_hist <- function(p_bom_id) {\n  experiments |> \n  filter(algorithm == \"Sobol\") |> \n  filter(bom_id == p_bom_id) |> \n  ggplot() +\n  aes(x = candidate_y_costs_mean) +\n  geom_histogram() +\n  scale_x_continuous(labels = comma) +\n  labs(x = \"Costs\", y = \"Count\") +\n  ggtitle(paste0(\"Distribution of costs outcome for BOM \", p_bom_id))\n}\n\ncreate_costs_hist(\"4\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"10\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"20\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"50\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"100\")"
+    "title": "6  Sobol",
+    "section": "6.1 Costs Distribution",
+    "text": "6.1 Costs Distribution\nThese plots are to verify the distribution of the costs. Since Sobol is space covering, the result should be representative.\n\n\nCode\np_bom_id = \"4\"\n\ncreate_costs_hist <- function(p_bom_id) {\n  experiments |> \n  filter(algorithm == \"Sobol\") |> \n  filter(bom_id == p_bom_id) |> \n  ggplot() +\n  aes(x = candidate_y_costs_mean) +\n  geom_histogram() +\n  scale_x_continuous(labels = comma) +\n  labs(x = \"Costs\", y = \"Count\") +\n  ggtitle(paste0(\"Distribution of costs outcome for BOM \", p_bom_id))\n}\n\ncreate_costs_hist(\"4\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"10\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"20\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"50\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"100\")"
   }
 ]

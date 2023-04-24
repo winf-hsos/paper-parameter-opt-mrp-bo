@@ -1,0 +1,97 @@
+# Convergence
+
+In this chapter, we examine how the different algorithms converge in comparison.
+
+```{r}
+source("_common.R")
+```
+
+
+# 4-dimensional
+
+```{r}
+#| code-fold: true
+p_bom_id = "4"
+p_budget <- 40 
+
+plot_budget_40 <- experiments |> 
+  filter(bom_id == p_bom_id) |> 
+  filter(budget == p_budget) |> 
+  select(experiment_id, replication, algorithm, candidate_id, candidate_sm, candidate_y_costs_mean, bom_id, budget) |> 
+  mutate(is_init = candidate_sm == "init") |> 
+  group_by(experiment_id, replication, algorithm,  bom_id, budget) |> 
+  arrange(experiment_id, replication, candidate_id) |> 
+  mutate(running_min_costs = cummin(candidate_y_costs_mean)) |> 
+  
+  ggplot() +
+  aes(x = candidate_id, y = running_min_costs, color = algorithm, fill = algorithm) +
+  geom_smooth(alpha = 0.1, level = 0.95) +
+  #geom_point(alpha = 0.01) +
+  scale_color_manual(values = algorithm_colors) +
+  scale_fill_manual(values = algorithm_colors) +
+  scale_y_continuous(labels = comma) +
+  xlim(0, p_budget) +
+  ggtitle(paste0("Budget ", p_budget)) +
+  theme_bw()
+
+
+p_budget <- 1000
+
+plot_budget_1000 <- experiments |> 
+  filter(bom_id == p_bom_id) |> 
+  filter(budget == p_budget) |> 
+  select(experiment_id, replication, algorithm, candidate_id, candidate_sm, candidate_y_costs_mean, bom_id, budget) |> 
+  mutate(is_init = candidate_sm == "init") |> 
+  group_by(experiment_id, replication, algorithm,  bom_id, budget) |> 
+  arrange(experiment_id, replication, candidate_id) |> 
+  mutate(running_min_costs = cummin(candidate_y_costs_mean)) |> 
+  
+  ggplot() +
+  aes(x = candidate_id, y = running_min_costs, color = algorithm, fill = algorithm) +
+  geom_smooth(alpha = 0.1, level = 0.95) +
+  #geom_point(alpha = 0.01) +
+  scale_color_manual(values = algorithm_colors) +
+  scale_fill_manual(values = algorithm_colors) +
+  scale_y_continuous(labels = comma) +
+  xlim(0, p_budget) +
+  ggtitle(paste0("Budget ", p_budget)) +
+  theme_bw()
+
+plot_grid(plot_budget_40, plot_budget_1000, ncol = 1)
+
+```
+
+## Best Points Found By Algorithm
+
+
+```{r}
+
+top_values <-
+experiments |> 
+  group_by(experiment_id, replication, algorithm, bom_id, budget) |> 
+  summarise(min_costs = min(candidate_y_costs_mean),
+            sl = candidate_y_service_level_mean[which.min(candidate_y_costs_mean)]) |> 
+  ungroup() |> 
+  arrange(bom_id, budget, min_costs) |>
+  group_by(bom_id, budget) |> 
+  top_n(20, -min_costs) |>  
+  filter(bom_id == "4", budget == 100) |> 
+  ungroup()
+
+
+
+top_values <- top_values |> 
+  mutate(row_number = row_number())
+
+  ggplot(top_values) +
+    aes(x = factor(row_number), y = min_costs, fill = algorithm) +
+    geom_col() +
+    scale_x_discrete(labels = top_values$algorithm) +
+    scale_y_continuous(labels = comma) +
+    scale_fill_manual(values = algorithm_colors) +
+    labs(x = "Algorithm") +
+    theme_bw() +
+    coord_flip() 
+  
+top_values$algorithm
+```
