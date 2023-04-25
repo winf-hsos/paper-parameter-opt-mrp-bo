@@ -6,3 +6,4 @@
 /.quarto/
 
 data/experiments.csv
+playground.R
