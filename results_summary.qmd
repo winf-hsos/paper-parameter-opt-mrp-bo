@@ -1,4 +1,4 @@
-# Summary Plots
+# Results Summary
 
 This chapter contains high-level summary plots with the main results across the different bill of materials and algorithms and their results.
 

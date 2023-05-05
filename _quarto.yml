@@ -16,8 +16,9 @@ book:
     - data.qmd
     - transformations.qmd
     - exploration.qmd
-    - summary_plots.qmd
+    - results_summary.qmd
     - convergence.qmd
+    - reliability.qmd
     - sobol.qmd
     - references.qmd
 

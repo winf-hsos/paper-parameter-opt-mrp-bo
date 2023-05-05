@@ -56,16 +56,16 @@
     "text": "3.1 Experiments Overview\nThe following table show an overview of all experiments conducted.\n\n\nCode\nexperiments |> \n  group_by(experiment_id, bom_id, algorithm, budget, replication) |> \n  summarize(num_candidates = n(),\n            min_costs = min(candidate_y_costs_mean)) |> \n  ungroup() |> \n  group_by(algorithm, bom_id, budget) |>\n  summarize(num_replications = n_distinct(experiment_id, replication),\n            total_candidates = sum(num_candidates)\n            ) |>\n  ungroup() |> \n  arrange(bom_id, algorithm, budget)"
   },
   {
-    "objectID": "summary_plots.html",
-    "href": "summary_plots.html",
-    "title": "4  Summary Plots",
+    "objectID": "results_summary.html",
+    "href": "results_summary.html",
+    "title": "4  Results Summary",
     "section": "",
     "text": "This chapter contains high-level summary plots with the main results across the different bill of materials and algorithms and their results."
   },
   {
-    "objectID": "summary_plots.html#best-results-by-bom-and-algorithm-boxplots",
-    "href": "summary_plots.html#best-results-by-bom-and-algorithm-boxplots",
-    "title": "4  Summary Plots",
+    "objectID": "results_summary.html#best-results-by-bom-and-algorithm-boxplots",
+    "href": "results_summary.html#best-results-by-bom-and-algorithm-boxplots",
+    "title": "4  Results Summary",
     "section": "4.1 Best Results by BOM and Algorithm (Boxplots)",
     "text": "4.1 Best Results by BOM and Algorithm (Boxplots)\n\n\nCode\ncreate_boxplots_per_bom <- function(p_bom_id) {\n  \n  p <- experiments |> \n    filter(bom_id == p_bom_id) |> \n    group_by(experiment_id, algorithm, budget, replication) |>\n    summarize(min_costs = min(candidate_y_costs_mean)) |> \n  \n    ggplot() +\n    aes(x = budget, y = min_costs, fill = algorithm) + \n    geom_boxplot() +\n    scale_fill_manual(values = algorithm_colors) +\n    scale_y_continuous(labels = comma) +\n    ggtitle(paste0(\"Distribution of best costs per algorithm for BOM \", p_bom_id)) +\n    labs(x = \"Budget\", y = \"Best Costs\", fill = \"Algorithm\")\n    #coord_cartesian(ylim = c(0, 40000)) \n\n  return(p)\n}\n\ncreate_boxplots_per_bom(\"4\")\n\n\n\n\n\n\nFor GPEI, the best point improves with more evaluation budget. At the same time, the results become more consistent with less variation. The best point is more reliably found.\nCMA-ES shows the largest variation as shown by the height of the boxes. Good points are not always found. This could be due to the fact that the algorithm can get stuck in a local minimum. CMA-ES is also the only algorithm with consistent large outliers, which underlines this hypothesis.\n\n\n\nCode\ncreate_boxplots_per_bom(\"10\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"20\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"50\")\n\n\n\n\n\n\n\nCode\ncreate_boxplots_per_bom(\"100\")"
   },
@@ -77,24 +77,73 @@
     "text": "In this chapter, we examine how the different algorithms converge in comparison."
   },
   {
-    "objectID": "convergence.html#best-points-found-by-algorithm",
-    "href": "convergence.html#best-points-found-by-algorithm",
+    "objectID": "convergence.html#dimensional",
+    "href": "convergence.html#dimensional",
     "title": "5  Convergence",
-    "section": "6.1 Best Points Found By Algorithm",
-    "text": "6.1 Best Points Found By Algorithm\n\n\nCode\ntop_values <-\nexperiments |> \n  group_by(experiment_id, replication, algorithm, bom_id, budget) |> \n  summarise(min_costs = min(candidate_y_costs_mean),\n            sl = candidate_y_service_level_mean[which.min(candidate_y_costs_mean)]) |> \n  ungroup() |> \n  arrange(bom_id, budget, min_costs) |>\n  group_by(bom_id, budget) |> \n  top_n(20, -min_costs) |>  \n  filter(bom_id == \"4\", budget == 100) |> \n  ungroup()\n\n\n\ntop_values <- top_values |> \n  mutate(row_number = row_number())\n\n  ggplot(top_values) +\n    aes(x = factor(row_number), y = min_costs, fill = algorithm) +\n    geom_col() +\n    scale_x_discrete(labels = top_values$algorithm) +\n    scale_y_continuous(labels = comma) +\n    scale_fill_manual(values = algorithm_colors) +\n    labs(x = \"Algorithm\") +\n    theme_bw() +\n    coord_flip() \n\n\n\n\n\nCode\ntop_values$algorithm\n\n\n [1] TurBO  TurBO  TurBO  SAASBO TurBO  TurBO  TurBO  SAASBO CMA-ES CMA-ES\n[11] TurBO  CMA-ES CMA-ES TurBO  TurBO  CMA-ES TurBO  CMA-ES TurBO  SAASBO\nLevels: Sobol GPEI TurBO CMA-ES SAASBO"
+    "section": "5.1 4-dimensional",
+    "text": "5.1 4-dimensional\n\n\nCode\nplot_convergence_by_bom__and_budget <- function(data, p_bom_id, p_budget, num_init, y_lims, show_legend = FALSE) {\n  \n  n <- experiments |> \n    filter(bom_id == p_bom_id, budget == p_budget) |> \n    summarise(n_exp = n_distinct(experiment_id, replication)) |> \n    pull()\n\n  plot <- data |> \n  filter(bom_id == p_bom_id) |> \n  filter(budget == p_budget) |> \n  select(experiment_id, replication, algorithm, candidate_id, candidate_sm, candidate_y_costs_mean, bom_id, budget) |> \n  mutate(is_init = candidate_sm == \"init\") |> \n  group_by(experiment_id, replication, algorithm,  bom_id, budget) |> \n  arrange(experiment_id, replication, candidate_id) |> \n  mutate(running_min_costs = cummin(candidate_y_costs_mean)) |> \n  \n  ggplot() +\n  aes(x = candidate_id, y = running_min_costs, color = algorithm, fill = algorithm) +\n  geom_smooth(alpha = 0.1, level = 0.95, linewidth = 0.9) +\n  geom_vline(xintercept = num_init, linetype = \"dashed\") +\n  scale_color_manual(values = algorithm_colors) +\n  scale_fill_manual(values = algorithm_colors) +\n  scale_y_continuous(labels = comma) +\n  scale_x_continuous(limits = c(0, as.integer(p_budget)), \n                     expand = c(0, 0), \n                     breaks = c(0, num_init, as.integer(p_budget) / 2, as.integer(p_budget))) +\n  ggtitle(paste0(\"BOM \", p_bom_id, \" / Budget \", p_budget, \" (n = \", as.character(n), \")\")) +\n  labs(x = \"Candidate\", y = \"Costs\", color = \"Algorithm\") +\n  guides(fill = \"none\") +\n  coord_cartesian(ylim = y_lims) + \n  theme(axis.title.y = element_blank(), \n        #axis.text.y = element_blank(), \n        #axis.ticks.y = element_blank(),\n        axis.title.x = element_blank(),\n        plot.margin = unit(c(0.2, 0.4, 0.2, 0.2), \"cm\"),\n        plot.title = element_text(size = 8))\n  \n  if(show_legend == FALSE)  {\n    plot <- plot + theme(legend.position = \"none\")\n  } else {\n    plot <- plot + theme(legend.position = \"bottom\")\n  }\n  \n  return(plot)\n}\n\ny_lims <- c(15000, 70000)\nplot_40 <- plot_convergence_by_bom__and_budget(experiments, \"4\", \"40\", 8, y_lims)\nplot_100 <- plot_convergence_by_bom__and_budget(experiments, \"4\", \"100\", 20, y_lims)\nplot_200 <- plot_convergence_by_bom__and_budget(experiments, \"4\", \"200\", 40, y_lims)\nplot_300 <- plot_convergence_by_bom__and_budget(experiments, \"4\", \"300\", 60, y_lims)\nplot_500 <- plot_convergence_by_bom__and_budget(experiments, \"4\", \"500\", 100, y_lims)\nplot_1000 <- plot_convergence_by_bom__and_budget(experiments, \"4\", \"1000\", 200, y_lims)\n\n\nplot_grid(plot_40, \n          plot_100, \n          plot_200, \n          plot_300,\n          plot_500, \n          plot_1000, \n          ncol = 3)"
+  },
+  {
+    "objectID": "convergence.html#dimensional-1",
+    "href": "convergence.html#dimensional-1",
+    "title": "5  Convergence",
+    "section": "5.2 10-dimensional",
+    "text": "5.2 10-dimensional\n\n\nCode\np_bom_id <- \"10\"\ny_lims <- c(38000, 80000)\n\nplot_40 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"40\", 8, y_lims)\nplot_100 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"100\", 20, y_lims)\nplot_200 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"200\", 40, y_lims)\nplot_300 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"300\", 60, y_lims)\nplot_500 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"500\", 100, y_lims)\nplot_1000 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"1000\", 200, y_lims)\n\n\nplot_grid(plot_40, \n          plot_100, \n          plot_200, \n          plot_300,\n          plot_500, \n          plot_1000, \n          ncol = 3)"
+  },
+  {
+    "objectID": "convergence.html#dimensional-2",
+    "href": "convergence.html#dimensional-2",
+    "title": "5  Convergence",
+    "section": "5.3 20-dimensional",
+    "text": "5.3 20-dimensional\n\n\nCode\np_bom_id <- \"20\"\ny_lims <- c(40000, 90000)\n\nplot_40 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"40\", 8, y_lims)\nplot_100 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"100\", 20, y_lims)\nplot_200 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"200\", 40, y_lims)\nplot_300 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"300\", 60, y_lims)\nplot_500 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"500\", 100, y_lims)\nplot_1000 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"1000\", 200, y_lims)\n\n\nplot_grid(plot_40, \n          plot_100, \n          plot_200, \n          plot_300,\n          plot_500, \n          plot_1000, \n          ncol = 3)"
+  },
+  {
+    "objectID": "convergence.html#dimensional-3",
+    "href": "convergence.html#dimensional-3",
+    "title": "5  Convergence",
+    "section": "5.4 50-dimensional",
+    "text": "5.4 50-dimensional\n\n\nCode\np_bom_id <- \"50\"\ny_lims <- c(200000, 1000000)\n\nplot_40 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"40\", 8, y_lims)\nplot_100 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"100\", 20, y_lims)\nplot_200 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"200\", 40, y_lims)\nplot_300 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"300\", 60, y_lims)\nplot_500 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"500\", 100, y_lims)\nplot_1000 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"1000\", 200, y_lims)\n\n\nplot_grid(plot_40, \n          plot_100, \n          plot_200, \n          plot_300,\n          plot_500, \n          plot_1000, \n          ncol = 3)"
+  },
+  {
+    "objectID": "convergence.html#dimensional-4",
+    "href": "convergence.html#dimensional-4",
+    "title": "5  Convergence",
+    "section": "5.5 100-dimensional",
+    "text": "5.5 100-dimensional\n\n\nCode\np_bom_id <- \"100\"\ny_lims <- c(300000, 5000000)\n\nplot_40 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"40\", 8, y_lims)\nplot_100 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"100\", 20, y_lims)\nplot_200 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"200\", 40, y_lims)\nplot_300 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"300\", 60, y_lims)\nplot_500 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"500\", 100, y_lims)\nplot_1000 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, \"1000\", 200, y_lims)\n\n\nplot_grid(plot_40, \n          plot_100, \n          plot_200, \n          plot_300,\n          plot_500, \n          plot_1000, \n          ncol = 3)"
+  },
+  {
+    "objectID": "reliability.html",
+    "href": "reliability.html",
+    "title": "6  Reliability",
+    "section": "",
+    "text": "This chapter analyzes the reliability of the different algorithms. That is, how reliably does it find the best point, given a specific budget."
+  },
+  {
+    "objectID": "reliability.html#crosshairs-plots",
+    "href": "reliability.html#crosshairs-plots",
+    "title": "6  Reliability",
+    "section": "6.1 Crosshairs Plots",
+    "text": "6.1 Crosshairs Plots\n\n6.1.1 Preparation\n\n\nCode\nplot_best_costs_in_trial <- function(p_bom_id) {\n\n  # Calculate the pest costs and service level and the candidate (trial) in which is was found\n  # per experiment replication\n  best_per_replication <- experiments |> \n    filter(bom_id == p_bom_id) |> \n    group_by(experiment_id, replication, algorithm, budget, bom_id) |> \n    summarize(min_costs = min(candidate_y_costs_mean),\n              min_costs_found_in_trial = candidate_id[which.min(candidate_y_costs_mean)])\n  \n  # Calculate the average best costs per algorithm and budget (for given bom_id)\n  avg_per_algorithm_budget <- \n    best_per_replication |> \n    group_by(algorithm, budget) |> \n    summarize(num_iterations = n(),\n              avg_min_costs = mean(min_costs), \n              sem_min_costs = sd(min_costs),\n              avg_min_costs_found_in_trial = mean(min_costs_found_in_trial),\n              sem_min_costs_found_in_trial = sd(min_costs_found_in_trial)\n    ) |> \n    mutate(upper_min_costs = avg_min_costs + sem_min_costs, \n           lower_min_costs = avg_min_costs - sem_min_costs,\n           upper_found_in_trial = avg_min_costs_found_in_trial + sem_min_costs_found_in_trial,\n           lower_found_in_trial = avg_min_costs_found_in_trial - sem_min_costs_found_in_trial)\n  \n  plot <-\n    avg_per_algorithm_budget |> \n      ggplot() +\n      aes(x = avg_min_costs_found_in_trial, y = avg_min_costs, color = algorithm) +\n      geom_point(size = 3) +\n      geom_errorbar(aes(ymin = lower_min_costs, ymax = upper_min_costs), width = 0) +\n      geom_errorbar(aes(xmin = lower_found_in_trial, xmax = upper_found_in_trial), width = 0) +\n      #geom_point(best_per_iteration, \n                 #mapping = aes(x = min_costs_found_in_trial, y = min_costs, color = algorithm), \n                 #size = 1.5,\n                 #alpha = 0.2) +\n      scale_color_manual(values = algorithm_colors) +\n      scale_y_continuous(labels = comma) +\n      theme_bw() +\n      ggtitle(paste0(\"Best point found by trial and algorithm (dimensions = \", p_bom_id,\")\")) +\n      labs(x = \"Best value found in trial\", y = \"Best value found\") +\n      facet_wrap(~budget, ncol = 3)\n\n  return(plot)\n  \n}\n\n\n\n\n6.1.2 4-dimensional\n\n\nCode\nplot_best_costs_in_trial(\"4\")\n\n\n\n\n\n\n\n6.1.3 10-dimensional\n\n\nCode\nplot_best_costs_in_trial(\"10\")\n\n\n\n\n\n\n\n6.1.4 20-dimensional\n\n\nCode\nplot_best_costs_in_trial(\"20\")\n\n\n\n\n\n\n\n6.1.5 50-dimensional\n\n\nCode\nplot_best_costs_in_trial(\"50\")\n\n\n\n\n\n\n\n6.1.6 100-dimensional\n\n\nCode\nplot_best_costs_in_trial(\"100\")"
+  },
+  {
+    "objectID": "reliability.html#density-plots",
+    "href": "reliability.html#density-plots",
+    "title": "6  Reliability",
+    "section": "6.2 Density Plots",
+    "text": "6.2 Density Plots\n\n6.2.1 Preparation\n\n\nCode\nlibrary(ggdensity)\n\nplot_best_costs_in_trial_density <- function(p_bom_id, p_budget) {\n  best_per_replication <- experiments |> \n    filter(bom_id == p_bom_id) |> \n    filter(budget == p_budget) |> \n    group_by(experiment_id, replication, algorithm, budget, bom_id) |> \n    summarize(min_costs = min(candidate_y_costs_mean),\n              min_costs_found_in_trial = candidate_id[which.min(candidate_y_costs_mean)])\n\n  pb <- c(0.75, 0.5, 0.25, 0.1) \n  plot <-\n    ggplot(best_per_replication) +\n    aes(x = min_costs_found_in_trial, y = min_costs, fill = algorithm) +\n    #geom_point(alpha = 1, shape = 20) +\n    geom_hdr(probs = pb, linewidth = 0.5) +\n    scale_color_manual(values = algorithm_colors) +\n    scale_fill_manual(values = algorithm_colors) +\n    scale_y_continuous(labels = comma) +\n    facet_wrap(~algorithm, ncol = 3) +\n    labs(alpha = \"Probability\", fill = \"Algorithm\", x = \"Best value found in trial\", y = \"Best value found\") +\n    ggtitle(paste0(\"Density of best points found by trial and algorithm (dim=\", p_bom_id,\" / budget=\", p_budget, \")\")) +\n    theme_simbo()\n\n  return(plot)\n}\n\n\n\n\n6.2.2 4-dimensional\n\n\nCode\nplot_best_costs_in_trial_density(\"4\", 40)\n\n\n\n\n\n\n\nCode\nplot_best_costs_in_trial_density(\"4\", 100)\n\n\n\n\n\n\n\nCode\nplot_best_costs_in_trial_density(\"4\", 200)\n\n\n\n\n\n\n\nCode\nplot_best_costs_in_trial_density(\"4\", 300)\n\n\n\n\n\n\n\nCode\nplot_best_costs_in_trial_density(\"4\", 500)\n\n\n\n\n\n\n\nCode\nplot_best_costs_in_trial_density(\"4\", 1000)"
   },
   {
     "objectID": "sobol.html",
     "href": "sobol.html",
-    "title": "6  Sobol",
+    "title": "7  Sobol",
     "section": "",
     "text": "This chapter contains analysis for the Sobol algorithm."
   },
   {
     "objectID": "sobol.html#costs-distribution",
     "href": "sobol.html#costs-distribution",
-    "title": "6  Sobol",
-    "section": "6.1 Costs Distribution",
-    "text": "6.1 Costs Distribution\nThese plots are to verify the distribution of the costs. Since Sobol is space covering, the result should be representative.\n\n\nCode\np_bom_id = \"4\"\n\ncreate_costs_hist <- function(p_bom_id) {\n  experiments |> \n  filter(algorithm == \"Sobol\") |> \n  filter(bom_id == p_bom_id) |> \n  ggplot() +\n  aes(x = candidate_y_costs_mean) +\n  geom_histogram() +\n  scale_x_continuous(labels = comma) +\n  labs(x = \"Costs\", y = \"Count\") +\n  ggtitle(paste0(\"Distribution of costs outcome for BOM \", p_bom_id))\n}\n\ncreate_costs_hist(\"4\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"10\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"20\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"50\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"100\")"
+    "title": "7  Sobol",
+    "section": "7.1 Costs Distribution",
+    "text": "7.1 Costs Distribution\nThese plots are to verify the distribution of the costs. Since Sobol is space covering, the result should be representative.\n\n\nCode\np_bom_id = \"4\"\n\ncreate_costs_hist <- function(p_bom_id) {\n  experiments |> \n  filter(algorithm == \"Sobol\") |> \n  filter(bom_id == p_bom_id) |> \n  ggplot() +\n  aes(x = candidate_y_costs_mean) +\n  geom_histogram() +\n  scale_x_continuous(labels = comma) +\n  labs(x = \"Costs\", y = \"Count\") +\n  ggtitle(paste0(\"Distribution of costs outcome for BOM \", p_bom_id))\n}\n\ncreate_costs_hist(\"4\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"10\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"20\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"50\")\n\n\n\n\n\n\n\nCode\ncreate_costs_hist(\"100\")"
   }
 ]

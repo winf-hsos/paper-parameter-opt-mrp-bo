@@ -1,0 +1,151 @@
+# Reliability
+
+This chapter analyzes the reliability of the different algorithms. That is, how reliably does it find the best point, given a specific budget.
+
+```{r}
+source("_common.R")
+```
+
+## Crosshairs Plots
+
+### Preparation
+
+```{r}
+plot_best_costs_in_trial <- function(p_bom_id) {
+
+  # Calculate the pest costs and service level and the candidate (trial) in which is was found
+  # per experiment replication
+  best_per_replication <- experiments |> 
+    filter(bom_id == p_bom_id) |> 
+    group_by(experiment_id, replication, algorithm, budget, bom_id) |> 
+    summarize(min_costs = min(candidate_y_costs_mean),
+              min_costs_found_in_trial = candidate_id[which.min(candidate_y_costs_mean)])
+  
+  # Calculate the average best costs per algorithm and budget (for given bom_id)
+  avg_per_algorithm_budget <- 
+    best_per_replication |> 
+    group_by(algorithm, budget) |> 
+    summarize(num_iterations = n(),
+              avg_min_costs = mean(min_costs), 
+              sem_min_costs = sd(min_costs),
+              avg_min_costs_found_in_trial = mean(min_costs_found_in_trial),
+              sem_min_costs_found_in_trial = sd(min_costs_found_in_trial)
+    ) |> 
+    mutate(upper_min_costs = avg_min_costs + sem_min_costs, 
+           lower_min_costs = avg_min_costs - sem_min_costs,
+           upper_found_in_trial = avg_min_costs_found_in_trial + sem_min_costs_found_in_trial,
+           lower_found_in_trial = avg_min_costs_found_in_trial - sem_min_costs_found_in_trial)
+  
+  plot <-
+    avg_per_algorithm_budget |> 
+      ggplot() +
+      aes(x = avg_min_costs_found_in_trial, y = avg_min_costs, color = algorithm) +
+      geom_point(size = 3) +
+      geom_errorbar(aes(ymin = lower_min_costs, ymax = upper_min_costs), width = 0) +
+      geom_errorbar(aes(xmin = lower_found_in_trial, xmax = upper_found_in_trial), width = 0) +
+      #geom_point(best_per_iteration, 
+                 #mapping = aes(x = min_costs_found_in_trial, y = min_costs, color = algorithm), 
+                 #size = 1.5,
+                 #alpha = 0.2) +
+      scale_color_manual(values = algorithm_colors) +
+      scale_y_continuous(labels = comma) +
+      theme_bw() +
+      ggtitle(paste0("Best point found by trial and algorithm (dimensions = ", p_bom_id,")")) +
+      labs(x = "Best value found in trial", y = "Best value found") +
+      facet_wrap(~budget, ncol = 3)
+
+  return(plot)
+  
+}
+
+```
+
+### 4-dimensional
+
+```{r}
+plot_best_costs_in_trial("4")
+```
+
+### 10-dimensional
+
+```{r}
+plot_best_costs_in_trial("10")
+```
+### 20-dimensional
+
+```{r}
+plot_best_costs_in_trial("20")
+```
+
+
+### 50-dimensional
+
+```{r}
+plot_best_costs_in_trial("50")
+```
+### 100-dimensional
+
+```{r}
+plot_best_costs_in_trial("100")
+```
+
+## Density Plots
+
+### Preparation
+
+```{r}
+library(ggdensity)
+
+plot_best_costs_in_trial_density <- function(p_bom_id, p_budget) {
+  best_per_replication <- experiments |> 
+    filter(bom_id == p_bom_id) |> 
+    filter(budget == p_budget) |> 
+    group_by(experiment_id, replication, algorithm, budget, bom_id) |> 
+    summarize(min_costs = min(candidate_y_costs_mean),
+              min_costs_found_in_trial = candidate_id[which.min(candidate_y_costs_mean)])
+
+  pb <- c(0.75, 0.5, 0.25, 0.1) 
+  plot <-
+    ggplot(best_per_replication) +
+    aes(x = min_costs_found_in_trial, y = min_costs, fill = algorithm) +
+    #geom_point(alpha = 1, shape = 20) +
+    geom_hdr(probs = pb, linewidth = 0.5) +
+    scale_color_manual(values = algorithm_colors) +
+    scale_fill_manual(values = algorithm_colors) +
+    scale_y_continuous(labels = comma) +
+    facet_wrap(~algorithm, ncol = 3) +
+    labs(alpha = "Probability", fill = "Algorithm", x = "Best value found in trial", y = "Best value found") +
+    ggtitle(paste0("Density of best points found by trial and algorithm (dim=", p_bom_id," / budget=", p_budget, ")")) +
+    theme_simbo()
+
+  return(plot)
+}
+
+```
+
+### 4-dimensional
+
+```{r}
+plot_best_costs_in_trial_density("4", 40)
+```
+
+
+```{r}
+plot_best_costs_in_trial_density("4", 100)
+```
+```{r}
+plot_best_costs_in_trial_density("4", 200)
+```
+```{r}
+plot_best_costs_in_trial_density("4", 300)
+```
+
+```{r}
+plot_best_costs_in_trial_density("4", 500)
+```
+
+```{r}
+plot_best_costs_in_trial_density("4", 1000)
+```
+
+

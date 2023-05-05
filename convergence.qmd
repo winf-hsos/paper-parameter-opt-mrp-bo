@@ -7,14 +7,19 @@ source("_common.R")
 ```
 
 
-# 4-dimensional
+## 4-dimensional
 
 ```{r}
 #| code-fold: true
-p_bom_id = "4"
-p_budget <- 40 
 
-plot_budget_40 <- experiments |> 
+plot_convergence_by_bom__and_budget <- function(data, p_bom_id, p_budget, num_init, y_lims, show_legend = FALSE) {
+  
+  n <- experiments |> 
+    filter(bom_id == p_bom_id, budget == p_budget) |> 
+    summarise(n_exp = n_distinct(experiment_id, replication)) |> 
+    pull()
+
+  plot <- data |> 
   filter(bom_id == p_bom_id) |> 
   filter(budget == p_budget) |> 
   select(experiment_id, replication, algorithm, candidate_id, candidate_sm, candidate_y_costs_mean, bom_id, budget) |> 
@@ -25,43 +30,151 @@ plot_budget_40 <- experiments |>
   
   ggplot() +
   aes(x = candidate_id, y = running_min_costs, color = algorithm, fill = algorithm) +
-  geom_smooth(alpha = 0.1, level = 0.95) +
-  #geom_point(alpha = 0.01) +
+  geom_smooth(alpha = 0.1, level = 0.95, linewidth = 0.9) +
+  geom_vline(xintercept = num_init, linetype = "dashed") +
   scale_color_manual(values = algorithm_colors) +
   scale_fill_manual(values = algorithm_colors) +
   scale_y_continuous(labels = comma) +
-  xlim(0, p_budget) +
-  ggtitle(paste0("Budget ", p_budget)) +
-  theme_bw()
-
-
-p_budget <- 1000
-
-plot_budget_1000 <- experiments |> 
-  filter(bom_id == p_bom_id) |> 
-  filter(budget == p_budget) |> 
-  select(experiment_id, replication, algorithm, candidate_id, candidate_sm, candidate_y_costs_mean, bom_id, budget) |> 
-  mutate(is_init = candidate_sm == "init") |> 
-  group_by(experiment_id, replication, algorithm,  bom_id, budget) |> 
-  arrange(experiment_id, replication, candidate_id) |> 
-  mutate(running_min_costs = cummin(candidate_y_costs_mean)) |> 
+  scale_x_continuous(limits = c(0, as.integer(p_budget)), 
+                     expand = c(0, 0), 
+                     breaks = c(0, num_init, as.integer(p_budget) / 2, as.integer(p_budget))) +
+  ggtitle(paste0("BOM ", p_bom_id, " / Budget ", p_budget, " (n = ", as.character(n), ")")) +
+  labs(x = "Candidate", y = "Costs", color = "Algorithm") +
+  guides(fill = "none") +
+  coord_cartesian(ylim = y_lims) + 
+  theme(axis.title.y = element_blank(), 
+        #axis.text.y = element_blank(), 
+        #axis.ticks.y = element_blank(),
+        axis.title.x = element_blank(),
+        plot.margin = unit(c(0.2, 0.4, 0.2, 0.2), "cm"),
+        plot.title = element_text(size = 8))
   
-  ggplot() +
-  aes(x = candidate_id, y = running_min_costs, color = algorithm, fill = algorithm) +
-  geom_smooth(alpha = 0.1, level = 0.95) +
-  #geom_point(alpha = 0.01) +
-  scale_color_manual(values = algorithm_colors) +
-  scale_fill_manual(values = algorithm_colors) +
-  scale_y_continuous(labels = comma) +
-  xlim(0, p_budget) +
-  ggtitle(paste0("Budget ", p_budget)) +
-  theme_bw()
+  if(show_legend == FALSE)  {
+    plot <- plot + theme(legend.position = "none")
+  } else {
+    plot <- plot + theme(legend.position = "bottom")
+  }
+  
+  return(plot)
+}
 
-plot_grid(plot_budget_40, plot_budget_1000, ncol = 1)
+y_lims <- c(15000, 70000)
+plot_40 <- plot_convergence_by_bom__and_budget(experiments, "4", "40", 8, y_lims)
+plot_100 <- plot_convergence_by_bom__and_budget(experiments, "4", "100", 20, y_lims)
+plot_200 <- plot_convergence_by_bom__and_budget(experiments, "4", "200", 40, y_lims)
+plot_300 <- plot_convergence_by_bom__and_budget(experiments, "4", "300", 60, y_lims)
+plot_500 <- plot_convergence_by_bom__and_budget(experiments, "4", "500", 100, y_lims)
+plot_1000 <- plot_convergence_by_bom__and_budget(experiments, "4", "1000", 200, y_lims)
+
+
+plot_grid(plot_40, 
+          plot_100, 
+          plot_200, 
+          plot_300,
+          plot_500, 
+          plot_1000, 
+          ncol = 3)
 
 ```
 
-## Best Points Found By Algorithm
+
+## 10-dimensional
+
+```{r}
+p_bom_id <- "10"
+y_lims <- c(38000, 80000)
+
+plot_40 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "40", 8, y_lims)
+plot_100 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "100", 20, y_lims)
+plot_200 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "200", 40, y_lims)
+plot_300 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "300", 60, y_lims)
+plot_500 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "500", 100, y_lims)
+plot_1000 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "1000", 200, y_lims)
+
+
+plot_grid(plot_40, 
+          plot_100, 
+          plot_200, 
+          plot_300,
+          plot_500, 
+          plot_1000, 
+          ncol = 3)
+
+```
+
+## 20-dimensional
+
+```{r}
+p_bom_id <- "20"
+y_lims <- c(40000, 90000)
+
+plot_40 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "40", 8, y_lims)
+plot_100 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "100", 20, y_lims)
+plot_200 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "200", 40, y_lims)
+plot_300 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "300", 60, y_lims)
+plot_500 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "500", 100, y_lims)
+plot_1000 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "1000", 200, y_lims)
+
+
+plot_grid(plot_40, 
+          plot_100, 
+          plot_200, 
+          plot_300,
+          plot_500, 
+          plot_1000, 
+          ncol = 3)
+
+```
+
+## 50-dimensional
+
+```{r}
+p_bom_id <- "50"
+y_lims <- c(200000, 1000000)
+
+plot_40 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "40", 8, y_lims)
+plot_100 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "100", 20, y_lims)
+plot_200 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "200", 40, y_lims)
+plot_300 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "300", 60, y_lims)
+plot_500 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "500", 100, y_lims)
+plot_1000 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "1000", 200, y_lims)
+
+
+plot_grid(plot_40, 
+          plot_100, 
+          plot_200, 
+          plot_300,
+          plot_500, 
+          plot_1000, 
+          ncol = 3)
+
+```
+
+## 100-dimensional
+
+```{r}
+p_bom_id <- "100"
+y_lims <- c(300000, 5000000)
+
+plot_40 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "40", 8, y_lims)
+plot_100 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "100", 20, y_lims)
+plot_200 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "200", 40, y_lims)
+plot_300 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "300", 60, y_lims)
+plot_500 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "500", 100, y_lims)
+plot_1000 <- plot_convergence_by_bom__and_budget(experiments, p_bom_id, "1000", 200, y_lims)
+
+
+plot_grid(plot_40, 
+          plot_100, 
+          plot_200, 
+          plot_300,
+          plot_500, 
+          plot_1000, 
+          ncol = 3)
+```
+
+
+# Best Points Found By Algorithm
 
 
 ```{r}
