@@ -11,7 +11,7 @@ algorithm_colors <- c(
   "GPEI" = pal_aaas()(5)[2],
   "TurBO" = pal_aaas()(5)[3],
   "CMA-ES" = pal_aaas()(5)[4],
-  "SAASBO" = pal_aaas()(5)[5]
+  "SAASBO" = pal_aaas()(8)[8]
 )
 
 theme_simbo <- function (base_size = 12, base_family = "Roboto Condensed") {
