@@ -2,6 +2,8 @@ library(tidyverse)
 library(scales)
 library(ggsci)
 library(cowplot)
+library(jsonlite)
+library(janitor)
 
 experiments <- readRDS("data/experiments.rds")
 

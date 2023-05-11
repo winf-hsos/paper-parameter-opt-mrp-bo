@@ -1,0 +1,248 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+# Paper
+
+This chapter contains the plots we used in the paper. They are all focused exclusively on the 20-dimensional bill of material.
+
+
+```{r}
+source("_common.R")
+```
+
+
+
+
+## Filter Experiments to `n = 15`
+
+We have randomly sampled a set of 15 replications for each algorithm and budget combination for the 20-dimensional problem. Except for SAASBO, for which we didn't have sufficient data at the time of publication.
+
+```{r}
+# Load set of experiments that were randomly chosen
+sets <- fromJSON("data/experiment_sets.json") |> 
+  clean_names() |> 
+  unlist()
+
+ids <- c()
+for(id in sets) {
+  ids <- append(ids, id)
+}
+
+# Add more CMA-ES experiments
+# experiments |>
+#   filter(bom_id == "20", algorithm == "CMA-ES", budget == 500) |>
+#   mutate(id = paste0(experiment_id, "_", replication)) |>
+#   filter(!id %in% ids) |>
+#   distinct(id) |>
+#   slice_sample(n = 10) |>
+#   pull()
+
+# The result saved as a hard-coded vector so we don't get a new sample with each rendering
+cmaes_40 <- c("OjSrwARGqEIRQiifgvd1_1", "OjSrwARGqEIRQiifgvd1_4", "OjSrwARGqEIRQiifgvd1_3", "OjSrwARGqEIRQiifgvd1_2", "OjSrwARGqEIRQiifgvd1_5")
+
+cmaes_100 <- c("5Y8tuHDjnkrC0YkeoZOF_9", "5Y8tuHDjnkrC0YkeoZOF_6", "5Y8tuHDjnkrC0YkeoZOF_16", "5Y8tuHDjnkrC0YkeoZOF_15", "5Y8tuHDjnkrC0YkeoZOF_5", "5Y8tuHDjnkrC0YkeoZOF_13", "5Y8tuHDjnkrC0YkeoZOF_7", "5Y8tuHDjnkrC0YkeoZOF_3", "5Y8tuHDjnkrC0YkeoZOF_19", "5Y8tuHDjnkrC0YkeoZOF_4")
+
+cmaes_200 <- c("1iLLcAgkBkCpbNVA8wAy_13", "1iLLcAgkBkCpbNVA8wAy_17", "1iLLcAgkBkCpbNVA8wAy_12", "1iLLcAgkBkCpbNVA8wAy_7", "1iLLcAgkBkCpbNVA8wAy_11", "1iLLcAgkBkCpbNVA8wAy_4", "1iLLcAgkBkCpbNVA8wAy_10", "1iLLcAgkBkCpbNVA8wAy_18", "1iLLcAgkBkCpbNVA8wAy_20", "1iLLcAgkBkCpbNVA8wAy_1")
+
+cmaes_300 <- c("NM7IhDftePjUHCsPbSVf_20", "NM7IhDftePjUHCsPbSVf_19", "NM7IhDftePjUHCsPbSVf_5", "NM7IhDftePjUHCsPbSVf_11", "NM7IhDftePjUHCsPbSVf_18", "NM7IhDftePjUHCsPbSVf_8", "NM7IhDftePjUHCsPbSVf_7",  "NM7IhDftePjUHCsPbSVf_10", "NM7IhDftePjUHCsPbSVf_4", "NM7IhDftePjUHCsPbSVf_12")
+
+cmaes_500 <- c("RTzQId0lAZssIfVN4RSe_5", "RTzQId0lAZssIfVN4RSe_6", "RTzQId0lAZssIfVN4RSe_1", "RTzQId0lAZssIfVN4RSe_3", "RTzQId0lAZssIfVN4RSe_9", "RTzQId0lAZssIfVN4RSe_8", "RTzQId0lAZssIfVN4RSe_7",  "RTzQId0lAZssIfVN4RSe_10","RTzQId0lAZssIfVN4RSe_2", "RTzQId0lAZssIfVN4RSe_4")
+
+cmaes_1000 <- c("Hu20xx2CpCp4Fn63tkuA_16", "Hu20xx2CpCp4Fn63tkuA_3", "Hu20xx2CpCp4Fn63tkuA_17", "Hu20xx2CpCp4Fn63tkuA_2", "Hu20xx2CpCp4Fn63tkuA_10", "Hu20xx2CpCp4Fn63tkuA_14", "Hu20xx2CpCp4Fn63tkuA_15", "Hu20xx2CpCp4Fn63tkuA_1", "Hu20xx2CpCp4Fn63tkuA_5", "Hu20xx2CpCp4Fn63tkuA_19")
+
+# Filter the experiments based on the randomly chosen set
+exp_bom_20 <- 
+  experiments |> 
+  mutate(id = paste0(experiment_id, "_", replication)) |> 
+  filter(id %in% ids | 
+           id %in% cmaes_40 | 
+           id %in% cmaes_100 | 
+           id %in% cmaes_200 | 
+           id %in% cmaes_300 |
+           id %in% cmaes_500 |
+           id %in% cmaes_1000)
+```
+
+Here is an overview of the experiments contained. We have a sample of `n=15` replications for all algorithms and budgets, except for SASSBO:
+
+```{r}
+exp_bom_20 |> 
+  group_by(algorithm, bom_id, budget) |> 
+  summarize(n_replications = n_distinct(experiment_id, replication)) |> 
+  print(n = 150)
+```
+
+## Boxplots
+
+```{r}
+create_boxplots_per_bom <- function(p_bom_id) {
+  
+  p <- exp_bom_20 |> 
+    filter(bom_id == p_bom_id) |> 
+    group_by(experiment_id, algorithm, budget, replication) |>
+    summarize(min_costs = min(candidate_y_costs_mean)) |> 
+  
+    ggplot() +
+    aes(x = budget, y = min_costs, fill = algorithm) + 
+    geom_boxplot() +
+    scale_fill_manual(values = algorithm_colors) +
+    scale_y_continuous(labels = comma) +
+    ggtitle(paste0("Distribution of best costs per algorithm (", p_bom_id, "-dimensions) ")) +
+    labs(x = "Evaluation Budget", y = "Best Costs", fill = "Algorithm") +
+    coord_cartesian(ylim = c(35000, 70000)) 
+
+  return(p)
+}
+
+box_20_bom <- create_boxplots_per_bom("20")
+
+#ggsave("plots/boxplot_bom_20.svg", box_20_bom, width = 7.73, height = 6.64, units = "in")
+
+box_20_bom
+```
+
+## Convergence
+
+```{r}
+plot_convergence_by_bom__and_budget <- function(data, p_bom_id, p_budget, num_init, y_lims, show_legend = FALSE) {
+  
+  n <- data |> 
+    filter(bom_id == p_bom_id, budget == p_budget) |> 
+    summarise(n_exp = n_distinct(experiment_id, replication)) |> 
+    pull()
+
+  plot <- data |> 
+  filter(bom_id == p_bom_id) |> 
+  filter(budget == p_budget) |> 
+  select(experiment_id, replication, algorithm, candidate_id, candidate_sm, candidate_y_costs_mean, bom_id, budget) |> 
+  mutate(is_init = candidate_sm == "init") |> 
+  group_by(experiment_id, replication, algorithm,  bom_id, budget) |> 
+  arrange(experiment_id, replication, candidate_id) |> 
+  mutate(running_min_costs = cummin(candidate_y_costs_mean)) |> 
+  
+  ggplot() +
+  aes(x = candidate_id, y = running_min_costs, color = algorithm, fill = algorithm) +
+  geom_smooth(level = 0.95, linewidth = 0.9, method = "loess", span = 0.6, se = FALSE, alpha = 0.2) +
+  geom_vline(xintercept = num_init, linetype = "dashed") +
+  scale_color_manual(values = algorithm_colors) +
+  scale_fill_manual(values = algorithm_colors) +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(limits = c(0, as.integer(p_budget)), 
+                     expand = c(0, 0), 
+                     breaks = c(0, num_init, as.integer(p_budget) / 2, as.integer(p_budget))) +
+  ggtitle(paste0("Evaluation Budget ", p_budget)) +
+  labs(x = "Candidate", y = "Costs", color = "Algorithm") +
+  guides(fill = "none") +
+  coord_cartesian(ylim = y_lims) + 
+  theme(axis.title.y = element_blank(), 
+        #axis.text.y = element_blank(), 
+        #axis.ticks.y = element_blank(),
+        axis.title.x = element_blank(),
+        plot.margin = unit(c(0.2, 0.4, 0.2, 0.2), "cm"),
+        plot.title = element_text(size = 8))
+  
+  if(show_legend == FALSE)  {
+    plot <- plot + theme(legend.position = "none")
+  } else {
+    plot <- plot + theme(
+      legend.position = c(0.8, 0.75), # Set the legend position inside the plot
+      legend.background = element_rect(color = "black", fill = "white", size = 0.4),
+      legend.key.size = unit(0.7, "lines"),  # Adjust the size of the legend keys
+      legend.text = element_text(size = 7),
+      legend.title = element_text(size = 9)
+    )
+  }
+  
+  return(plot)
+}
+
+p_bom_id <- "20"
+y_lims <- c(37000, 80000)
+
+plot_40 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "40", 8, y_lims)
+plot_100 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "100", 20, y_lims)
+plot_200 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "200", 40, y_lims, show_legend = TRUE)
+plot_300 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "300", 60, y_lims)
+plot_500 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "500", 100, y_lims)
+plot_1000 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "1000", 200, y_lims)
+
+plot_200
+#plot_1000
+
+plot_grid(plot_40, 
+          plot_100, 
+          plot_200, 
+          plot_300,
+          plot_500, 
+          plot_1000, 
+          ncol = 3)
+```
+
+## Summary Table
+
+```{r}
+#install.packages("gt")
+library(gt)
+
+experiments |> 
+  filter(budget == 1000) |> 
+  group_by(experiment_id, bom_id, algorithm, budget, replication) |>
+  summarize(min_costs = min(candidate_y_costs_mean)) |> 
+  ungroup() |> 
+  group_by(bom_id, algorithm) |> 
+  summarize(avg_best_costs = mean(min_costs),
+            median_best_costs = quantile(min_costs, 0.5),
+            sd_best_costs = sd(min_costs),
+            n = n()) |> 
+  ungroup() |> 
+  gt(rowname_col = "algorithm") |> 
+  cols_label(
+    avg_best_costs = md("Mean"),
+    median_best_costs = md("Median"),
+    sd_best_costs = md("SD"),
+    bom_id = md("BOM")
+    ) |> 
+  fmt_number(
+  columns = c("avg_best_costs", "median_best_costs", "sd_best_costs"),
+  decimals = 0,
+  )
+```
+
+
+## Table with Best Absolute
+
+
+```{r}
+
+experiments |> 
+  group_by(experiment_id, bom_id, algorithm, budget, replication) |>
+  summarize(min_costs = min(candidate_y_costs_mean)) |> 
+  ungroup() |> 
+  group_by(bom_id, algorithm) |> 
+  summarize(abs_min_costs = min(min_costs),
+            avg_best_costs = mean(min_costs),
+            median_best_costs = quantile(min_costs, 0.5),
+            sd_best_costs = sd(min_costs),
+            n = n()) |> 
+  ungroup() |> 
+  gt() |> 
+   cols_label(
+    avg_best_costs = md("Mean"),
+    median_best_costs = md("Median"),
+    sd_best_costs = md("SD"),
+    bom_id = md("BOM"),
+    algorithm = md("Algorithm"),
+    abs_min_costs = md("Absolute Best")
+    ) |> 
+  tab_options(
+  table.font.name = "Times New Roman") |> 
+  opt_row_striping()
+
+```
+
+
+
+
+

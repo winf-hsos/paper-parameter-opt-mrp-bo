@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.251">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>MRP Parameter Optimization with BO - 4&nbsp; Paper</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./results_summary.html" rel="next">
+<link href="./exploration.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Paper</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">MRP Parameter Optimization with BO</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Packages and Data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./transformations.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Transformations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exploration.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Exploration</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Paper</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./results_summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Results Summary</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./convergence.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Convergence</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reliability.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Reliability</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sobol.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sobol</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#filter-experiments-to-n-15" id="toc-filter-experiments-to-n-15" class="nav-link active" data-scroll-target="#filter-experiments-to-n-15"><span class="toc-section-number">4.1</span>  Filter Experiments to <code>n = 15</code></a></li>
+  <li><a href="#boxplots" id="toc-boxplots" class="nav-link" data-scroll-target="#boxplots"><span class="toc-section-number">4.2</span>  Boxplots</a></li>
+  <li><a href="#convergence" id="toc-convergence" class="nav-link" data-scroll-target="#convergence"><span class="toc-section-number">4.3</span>  Convergence</a></li>
+  <li><a href="#summary-table" id="toc-summary-table" class="nav-link" data-scroll-target="#summary-table"><span class="toc-section-number">4.4</span>  Summary Table</a></li>
+  <li><a href="#table-with-best-absolute" id="toc-table-with-best-absolute" class="nav-link" data-scroll-target="#table-with-best-absolute"><span class="toc-section-number">4.5</span>  Table with Best Absolute</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Paper</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>This chapter contains the plots we used in the paper. They are all focused exclusively on the 20-dimensional bill of material.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"_common.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="filter-experiments-to-n-15" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="filter-experiments-to-n-15"><span class="header-section-number">4.1</span> Filter Experiments to <code>n = 15</code></h2>
+<p>We have randomly sampled a set of 15 replications for each algorithm and budget combination for the 20-dimensional problem. Except for SAASBO, for which we didn’t have sufficient data at the time of publication.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load set of experiments that were randomly chosen</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sets <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="st">"data/experiment_sets.json"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(id <span class="cf">in</span> sets) {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  ids <span class="ot">&lt;-</span> <span class="fu">append</span>(ids, id)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Add more CMA-ES experiments</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># experiments |&gt;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   filter(bom_id == "20", algorithm == "CMA-ES", budget == 500) |&gt;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   mutate(id = paste0(experiment_id, "_", replication)) |&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   filter(!id %in% ids) |&gt;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   distinct(id) |&gt;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   slice_sample(n = 10) |&gt;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#   pull()</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># The result saved as a hard-coded vector so we don't get a new sample with each rendering</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>cmaes_40 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"OjSrwARGqEIRQiifgvd1_1"</span>, <span class="st">"OjSrwARGqEIRQiifgvd1_4"</span>, <span class="st">"OjSrwARGqEIRQiifgvd1_3"</span>, <span class="st">"OjSrwARGqEIRQiifgvd1_2"</span>, <span class="st">"OjSrwARGqEIRQiifgvd1_5"</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>cmaes_100 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"5Y8tuHDjnkrC0YkeoZOF_9"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_6"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_16"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_15"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_5"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_13"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_7"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_3"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_19"</span>, <span class="st">"5Y8tuHDjnkrC0YkeoZOF_4"</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>cmaes_200 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"1iLLcAgkBkCpbNVA8wAy_13"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_17"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_12"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_7"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_11"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_4"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_10"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_18"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_20"</span>, <span class="st">"1iLLcAgkBkCpbNVA8wAy_1"</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>cmaes_300 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NM7IhDftePjUHCsPbSVf_20"</span>, <span class="st">"NM7IhDftePjUHCsPbSVf_19"</span>, <span class="st">"NM7IhDftePjUHCsPbSVf_5"</span>, <span class="st">"NM7IhDftePjUHCsPbSVf_11"</span>, <span class="st">"NM7IhDftePjUHCsPbSVf_18"</span>, <span class="st">"NM7IhDftePjUHCsPbSVf_8"</span>, <span class="st">"NM7IhDftePjUHCsPbSVf_7"</span>,  <span class="st">"NM7IhDftePjUHCsPbSVf_10"</span>, <span class="st">"NM7IhDftePjUHCsPbSVf_4"</span>, <span class="st">"NM7IhDftePjUHCsPbSVf_12"</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>cmaes_500 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RTzQId0lAZssIfVN4RSe_5"</span>, <span class="st">"RTzQId0lAZssIfVN4RSe_6"</span>, <span class="st">"RTzQId0lAZssIfVN4RSe_1"</span>, <span class="st">"RTzQId0lAZssIfVN4RSe_3"</span>, <span class="st">"RTzQId0lAZssIfVN4RSe_9"</span>, <span class="st">"RTzQId0lAZssIfVN4RSe_8"</span>, <span class="st">"RTzQId0lAZssIfVN4RSe_7"</span>,  <span class="st">"RTzQId0lAZssIfVN4RSe_10"</span>,<span class="st">"RTzQId0lAZssIfVN4RSe_2"</span>, <span class="st">"RTzQId0lAZssIfVN4RSe_4"</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>cmaes_1000 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Hu20xx2CpCp4Fn63tkuA_16"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_3"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_17"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_2"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_10"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_14"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_15"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_1"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_5"</span>, <span class="st">"Hu20xx2CpCp4Fn63tkuA_19"</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the experiments based on the randomly chosen set</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>exp_bom_20 <span class="ot">&lt;-</span> </span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  experiments <span class="sc">|&gt;</span> </span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">paste0</span>(experiment_id, <span class="st">"_"</span>, replication)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(id <span class="sc">%in%</span> ids <span class="sc">|</span> </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>           id <span class="sc">%in%</span> cmaes_40 <span class="sc">|</span> </span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>           id <span class="sc">%in%</span> cmaes_100 <span class="sc">|</span> </span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>           id <span class="sc">%in%</span> cmaes_200 <span class="sc">|</span> </span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>           id <span class="sc">%in%</span> cmaes_300 <span class="sc">|</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>           id <span class="sc">%in%</span> cmaes_500 <span class="sc">|</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>           id <span class="sc">%in%</span> cmaes_1000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Here is an overview of the experiments contained. We have a sample of <code>n=15</code> replications for all algorithms and budgets, except for SASSBO:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>exp_bom_20 <span class="sc">|&gt;</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(algorithm, bom_id, budget) <span class="sc">|&gt;</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n_replications =</span> <span class="fu">n_distinct</span>(experiment_id, replication)) <span class="sc">|&gt;</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 26 x 4
+# Groups:   algorithm, bom_id [5]
+   algorithm bom_id budget n_replications
+   &lt;fct&gt;     &lt;fct&gt;  &lt;fct&gt;           &lt;int&gt;
+ 1 Sobol     20     40                 15
+ 2 Sobol     20     100                15
+ 3 Sobol     20     200                15
+ 4 Sobol     20     300                15
+ 5 Sobol     20     500                15
+ 6 Sobol     20     1000               15
+ 7 GPEI      20     40                 15
+ 8 GPEI      20     100                15
+ 9 GPEI      20     200                15
+10 GPEI      20     300                15
+11 GPEI      20     500                15
+12 GPEI      20     1000               15
+13 TurBO     20     40                 15
+14 TurBO     20     100                15
+15 TurBO     20     200                15
+16 TurBO     20     300                15
+17 TurBO     20     500                15
+18 TurBO     20     1000               15
+19 CMA-ES    20     40                 15
+20 CMA-ES    20     100                15
+21 CMA-ES    20     200                15
+22 CMA-ES    20     300                15
+23 CMA-ES    20     500                15
+24 CMA-ES    20     1000               15
+25 SAASBO    20     40                 10
+26 SAASBO    20     200                 3</code></pre>
+</div>
+</div>
+</section>
+<section id="boxplots" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="boxplots"><span class="header-section-number">4.2</span> Boxplots</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>create_boxplots_per_bom <span class="ot">&lt;-</span> <span class="cf">function</span>(p_bom_id) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> exp_bom_20 <span class="sc">|&gt;</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(bom_id <span class="sc">==</span> p_bom_id) <span class="sc">|&gt;</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(experiment_id, algorithm, budget, replication) <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">min_costs =</span> <span class="fu">min</span>(candidate_y_costs_mean)) <span class="sc">|&gt;</span> </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> budget, <span class="at">y =</span> min_costs, <span class="at">fill =</span> algorithm) <span class="sc">+</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> algorithm_colors) <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> comma) <span class="sc">+</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Distribution of best costs per algorithm ("</span>, p_bom_id, <span class="st">"-dimensions) "</span>)) <span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Evaluation Budget"</span>, <span class="at">y =</span> <span class="st">"Best Costs"</span>, <span class="at">fill =</span> <span class="st">"Algorithm"</span>) <span class="sc">+</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">35000</span>, <span class="dv">70000</span>)) </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(p)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>box_20_bom <span class="ot">&lt;-</span> <span class="fu">create_boxplots_per_bom</span>(<span class="st">"20"</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#ggsave("plots/boxplot_bom_20.svg", box_20_bom, width = 7.73, height = 6.64, units = "in")</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>box_20_bom</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="paper_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="convergence" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="convergence"><span class="header-section-number">4.3</span> Convergence</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plot_convergence_by_bom__and_budget <span class="ot">&lt;-</span> <span class="cf">function</span>(data, p_bom_id, p_budget, num_init, y_lims, <span class="at">show_legend =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(bom_id <span class="sc">==</span> p_bom_id, budget <span class="sc">==</span> p_budget) <span class="sc">|&gt;</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">n_exp =</span> <span class="fu">n_distinct</span>(experiment_id, replication)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>()</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  plot <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(bom_id <span class="sc">==</span> p_bom_id) <span class="sc">|&gt;</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(budget <span class="sc">==</span> p_budget) <span class="sc">|&gt;</span> </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(experiment_id, replication, algorithm, candidate_id, candidate_sm, candidate_y_costs_mean, bom_id, budget) <span class="sc">|&gt;</span> </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_init =</span> candidate_sm <span class="sc">==</span> <span class="st">"init"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(experiment_id, replication, algorithm,  bom_id, budget) <span class="sc">|&gt;</span> </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(experiment_id, replication, candidate_id) <span class="sc">|&gt;</span> </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">running_min_costs =</span> <span class="fu">cummin</span>(candidate_y_costs_mean)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> candidate_id, <span class="at">y =</span> running_min_costs, <span class="at">color =</span> algorithm, <span class="at">fill =</span> algorithm) <span class="sc">+</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">level =</span> <span class="fl">0.95</span>, <span class="at">linewidth =</span> <span class="fl">0.9</span>, <span class="at">method =</span> <span class="st">"loess"</span>, <span class="at">span =</span> <span class="fl">0.6</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> num_init, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> algorithm_colors) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> algorithm_colors) <span class="sc">+</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> comma) <span class="sc">+</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">as.integer</span>(p_budget)), </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, num_init, <span class="fu">as.integer</span>(p_budget) <span class="sc">/</span> <span class="dv">2</span>, <span class="fu">as.integer</span>(p_budget))) <span class="sc">+</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Evaluation Budget "</span>, p_budget)) <span class="sc">+</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Candidate"</span>, <span class="at">y =</span> <span class="st">"Costs"</span>, <span class="at">color =</span> <span class="st">"Algorithm"</span>) <span class="sc">+</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> y_lims) <span class="sc">+</span> </span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(), </span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        <span class="co">#axis.text.y = element_blank(), </span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>        <span class="co">#axis.ticks.y = element_blank(),</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>), <span class="st">"cm"</span>),</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>))</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(show_legend <span class="sc">==</span> <span class="cn">FALSE</span>)  {</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>    plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">theme</span>(</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.75</span>), <span class="co"># Set the legend position inside the plot</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="fl">0.4</span>),</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="fl">0.7</span>, <span class="st">"lines"</span>),  <span class="co"># Adjust the size of the legend keys</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>)</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(plot)</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>p_bom_id <span class="ot">&lt;-</span> <span class="st">"20"</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>y_lims <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">37000</span>, <span class="dv">80000</span>)</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>plot_40 <span class="ot">&lt;-</span> <span class="fu">plot_convergence_by_bom__and_budget</span>(exp_bom_20, p_bom_id, <span class="st">"40"</span>, <span class="dv">8</span>, y_lims)</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>plot_100 <span class="ot">&lt;-</span> <span class="fu">plot_convergence_by_bom__and_budget</span>(exp_bom_20, p_bom_id, <span class="st">"100"</span>, <span class="dv">20</span>, y_lims)</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>plot_200 <span class="ot">&lt;-</span> <span class="fu">plot_convergence_by_bom__and_budget</span>(exp_bom_20, p_bom_id, <span class="st">"200"</span>, <span class="dv">40</span>, y_lims, <span class="at">show_legend =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>plot_300 <span class="ot">&lt;-</span> <span class="fu">plot_convergence_by_bom__and_budget</span>(exp_bom_20, p_bom_id, <span class="st">"300"</span>, <span class="dv">60</span>, y_lims)</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>plot_500 <span class="ot">&lt;-</span> <span class="fu">plot_convergence_by_bom__and_budget</span>(exp_bom_20, p_bom_id, <span class="st">"500"</span>, <span class="dv">100</span>, y_lims)</span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>plot_1000 <span class="ot">&lt;-</span> <span class="fu">plot_convergence_by_bom__and_budget</span>(exp_bom_20, p_bom_id, <span class="st">"1000"</span>, <span class="dv">200</span>, y_lims)</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>plot_200</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="paper_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plot_1000</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(plot_40, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>          plot_100, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>          plot_200, </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>          plot_300,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>          plot_500, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>          plot_1000, </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="paper_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="summary-table" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="summary-table"><span class="header-section-number">4.4</span> Summary Table</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("gt")</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>experiments <span class="sc">|&gt;</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(budget <span class="sc">==</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(experiment_id, bom_id, algorithm, budget, replication) <span class="sc">|&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min_costs =</span> <span class="fu">min</span>(candidate_y_costs_mean)) <span class="sc">|&gt;</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(bom_id, algorithm) <span class="sc">|&gt;</span> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_best_costs =</span> <span class="fu">mean</span>(min_costs),</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">median_best_costs =</span> <span class="fu">quantile</span>(min_costs, <span class="fl">0.5</span>),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_best_costs =</span> <span class="fu">sd</span>(min_costs),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"algorithm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_best_costs =</span> <span class="fu">md</span>(<span class="st">"Mean"</span>),</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_best_costs =</span> <span class="fu">md</span>(<span class="st">"Median"</span>),</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_best_costs =</span> <span class="fu">md</span>(<span class="st">"SD"</span>),</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">bom_id =</span> <span class="fu">md</span>(<span class="st">"BOM"</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"avg_best_costs"</span>, <span class="st">"median_best_costs"</span>, <span class="st">"sd_best_costs"</span>),</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">decimals =</span> <span class="dv">0</span>,</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="rkxhosaunw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rkxhosaunw table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#rkxhosaunw thead, #rkxhosaunw tbody, #rkxhosaunw tfoot, #rkxhosaunw tr, #rkxhosaunw td, #rkxhosaunw th {
+  border-style: none;
+}
+
+#rkxhosaunw p {
+  margin: 0;
+  padding: 0;
+}
+
+#rkxhosaunw .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#rkxhosaunw .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#rkxhosaunw .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#rkxhosaunw .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#rkxhosaunw .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#rkxhosaunw .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#rkxhosaunw .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#rkxhosaunw .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#rkxhosaunw .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#rkxhosaunw .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#rkxhosaunw .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#rkxhosaunw .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#rkxhosaunw .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#rkxhosaunw .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#rkxhosaunw .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rkxhosaunw .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#rkxhosaunw .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#rkxhosaunw .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#rkxhosaunw .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rkxhosaunw .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#rkxhosaunw .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rkxhosaunw .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#rkxhosaunw .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rkxhosaunw .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#rkxhosaunw .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rkxhosaunw .gt_left {
+  text-align: left;
+}
+
+#rkxhosaunw .gt_center {
+  text-align: center;
+}
+
+#rkxhosaunw .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#rkxhosaunw .gt_font_normal {
+  font-weight: normal;
+}
+
+#rkxhosaunw .gt_font_bold {
+  font-weight: bold;
+}
+
+#rkxhosaunw .gt_font_italic {
+  font-style: italic;
+}
+
+#rkxhosaunw .gt_super {
+  font-size: 65%;
+}
+
+#rkxhosaunw .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#rkxhosaunw .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#rkxhosaunw .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#rkxhosaunw .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#rkxhosaunw .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#rkxhosaunw .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#rkxhosaunw .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id=""></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="BOM">BOM</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Mean">Mean</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Median">Median</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="SD">SD</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="n">n</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><th id="stub_1_1" scope="row" class="gt_row gt_center gt_stub">Sobol</th>
+<td headers="stub_1_1 bom_id" class="gt_row gt_center">4</td>
+<td headers="stub_1_1 avg_best_costs" class="gt_row gt_right">21,354</td>
+<td headers="stub_1_1 median_best_costs" class="gt_row gt_right">21,211</td>
+<td headers="stub_1_1 sd_best_costs" class="gt_row gt_right">1,620</td>
+<td headers="stub_1_1 n" class="gt_row gt_right">25</td></tr>
+    <tr><th id="stub_1_2" scope="row" class="gt_row gt_center gt_stub">GPEI</th>
+<td headers="stub_1_2 bom_id" class="gt_row gt_center">4</td>
+<td headers="stub_1_2 avg_best_costs" class="gt_row gt_right">15,291</td>
+<td headers="stub_1_2 median_best_costs" class="gt_row gt_right">15,419</td>
+<td headers="stub_1_2 sd_best_costs" class="gt_row gt_right">1,145</td>
+<td headers="stub_1_2 n" class="gt_row gt_right">25</td></tr>
+    <tr><th id="stub_1_3" scope="row" class="gt_row gt_center gt_stub">TurBO</th>
+<td headers="stub_1_3 bom_id" class="gt_row gt_center">4</td>
+<td headers="stub_1_3 avg_best_costs" class="gt_row gt_right">17,128</td>
+<td headers="stub_1_3 median_best_costs" class="gt_row gt_right">17,166</td>
+<td headers="stub_1_3 sd_best_costs" class="gt_row gt_right">1,285</td>
+<td headers="stub_1_3 n" class="gt_row gt_right">25</td></tr>
+    <tr><th id="stub_1_4" scope="row" class="gt_row gt_center gt_stub">CMA-ES</th>
+<td headers="stub_1_4 bom_id" class="gt_row gt_center">4</td>
+<td headers="stub_1_4 avg_best_costs" class="gt_row gt_right">22,393</td>
+<td headers="stub_1_4 median_best_costs" class="gt_row gt_right">18,102</td>
+<td headers="stub_1_4 sd_best_costs" class="gt_row gt_right">10,560</td>
+<td headers="stub_1_4 n" class="gt_row gt_right">25</td></tr>
+    <tr><th id="stub_1_5" scope="row" class="gt_row gt_center gt_stub">Sobol</th>
+<td headers="stub_1_5 bom_id" class="gt_row gt_center">10</td>
+<td headers="stub_1_5 avg_best_costs" class="gt_row gt_right">44,370</td>
+<td headers="stub_1_5 median_best_costs" class="gt_row gt_right">44,632</td>
+<td headers="stub_1_5 sd_best_costs" class="gt_row gt_right">2,262</td>
+<td headers="stub_1_5 n" class="gt_row gt_right">55</td></tr>
+    <tr><th id="stub_1_6" scope="row" class="gt_row gt_center gt_stub">GPEI</th>
+<td headers="stub_1_6 bom_id" class="gt_row gt_center">10</td>
+<td headers="stub_1_6 avg_best_costs" class="gt_row gt_right">41,431</td>
+<td headers="stub_1_6 median_best_costs" class="gt_row gt_right">41,354</td>
+<td headers="stub_1_6 sd_best_costs" class="gt_row gt_right">1,894</td>
+<td headers="stub_1_6 n" class="gt_row gt_right">35</td></tr>
+    <tr><th id="stub_1_7" scope="row" class="gt_row gt_center gt_stub">TurBO</th>
+<td headers="stub_1_7 bom_id" class="gt_row gt_center">10</td>
+<td headers="stub_1_7 avg_best_costs" class="gt_row gt_right">40,062</td>
+<td headers="stub_1_7 median_best_costs" class="gt_row gt_right">40,620</td>
+<td headers="stub_1_7 sd_best_costs" class="gt_row gt_right">2,497</td>
+<td headers="stub_1_7 n" class="gt_row gt_right">35</td></tr>
+    <tr><th id="stub_1_8" scope="row" class="gt_row gt_center gt_stub">CMA-ES</th>
+<td headers="stub_1_8 bom_id" class="gt_row gt_center">10</td>
+<td headers="stub_1_8 avg_best_costs" class="gt_row gt_right">45,152</td>
+<td headers="stub_1_8 median_best_costs" class="gt_row gt_right">43,538</td>
+<td headers="stub_1_8 sd_best_costs" class="gt_row gt_right">8,357</td>
+<td headers="stub_1_8 n" class="gt_row gt_right">25</td></tr>
+    <tr><th id="stub_1_9" scope="row" class="gt_row gt_center gt_stub">Sobol</th>
+<td headers="stub_1_9 bom_id" class="gt_row gt_center">20</td>
+<td headers="stub_1_9 avg_best_costs" class="gt_row gt_right">49,197</td>
+<td headers="stub_1_9 median_best_costs" class="gt_row gt_right">49,271</td>
+<td headers="stub_1_9 sd_best_costs" class="gt_row gt_right">2,405</td>
+<td headers="stub_1_9 n" class="gt_row gt_right">35</td></tr>
+    <tr><th id="stub_1_10" scope="row" class="gt_row gt_center gt_stub">GPEI</th>
+<td headers="stub_1_10 bom_id" class="gt_row gt_center">20</td>
+<td headers="stub_1_10 avg_best_costs" class="gt_row gt_right">45,750</td>
+<td headers="stub_1_10 median_best_costs" class="gt_row gt_right">45,258</td>
+<td headers="stub_1_10 sd_best_costs" class="gt_row gt_right">2,180</td>
+<td headers="stub_1_10 n" class="gt_row gt_right">15</td></tr>
+    <tr><th id="stub_1_11" scope="row" class="gt_row gt_center gt_stub">TurBO</th>
+<td headers="stub_1_11 bom_id" class="gt_row gt_center">20</td>
+<td headers="stub_1_11 avg_best_costs" class="gt_row gt_right">42,294</td>
+<td headers="stub_1_11 median_best_costs" class="gt_row gt_right">42,111</td>
+<td headers="stub_1_11 sd_best_costs" class="gt_row gt_right">2,497</td>
+<td headers="stub_1_11 n" class="gt_row gt_right">15</td></tr>
+    <tr><th id="stub_1_12" scope="row" class="gt_row gt_center gt_stub">CMA-ES</th>
+<td headers="stub_1_12 bom_id" class="gt_row gt_center">20</td>
+<td headers="stub_1_12 avg_best_costs" class="gt_row gt_right">44,569</td>
+<td headers="stub_1_12 median_best_costs" class="gt_row gt_right">43,406</td>
+<td headers="stub_1_12 sd_best_costs" class="gt_row gt_right">5,275</td>
+<td headers="stub_1_12 n" class="gt_row gt_right">25</td></tr>
+    <tr><th id="stub_1_13" scope="row" class="gt_row gt_center gt_stub">Sobol</th>
+<td headers="stub_1_13 bom_id" class="gt_row gt_center">50</td>
+<td headers="stub_1_13 avg_best_costs" class="gt_row gt_right">215,936</td>
+<td headers="stub_1_13 median_best_costs" class="gt_row gt_right">215,540</td>
+<td headers="stub_1_13 sd_best_costs" class="gt_row gt_right">15,091</td>
+<td headers="stub_1_13 n" class="gt_row gt_right">15</td></tr>
+    <tr><th id="stub_1_14" scope="row" class="gt_row gt_center gt_stub">GPEI</th>
+<td headers="stub_1_14 bom_id" class="gt_row gt_center">50</td>
+<td headers="stub_1_14 avg_best_costs" class="gt_row gt_right">211,428</td>
+<td headers="stub_1_14 median_best_costs" class="gt_row gt_right">210,178</td>
+<td headers="stub_1_14 sd_best_costs" class="gt_row gt_right">8,835</td>
+<td headers="stub_1_14 n" class="gt_row gt_right">15</td></tr>
+    <tr><th id="stub_1_15" scope="row" class="gt_row gt_center gt_stub">TurBO</th>
+<td headers="stub_1_15 bom_id" class="gt_row gt_center">50</td>
+<td headers="stub_1_15 avg_best_costs" class="gt_row gt_right">210,154</td>
+<td headers="stub_1_15 median_best_costs" class="gt_row gt_right">213,889</td>
+<td headers="stub_1_15 sd_best_costs" class="gt_row gt_right">16,945</td>
+<td headers="stub_1_15 n" class="gt_row gt_right">15</td></tr>
+    <tr><th id="stub_1_16" scope="row" class="gt_row gt_center gt_stub">CMA-ES</th>
+<td headers="stub_1_16 bom_id" class="gt_row gt_center">50</td>
+<td headers="stub_1_16 avg_best_costs" class="gt_row gt_right">254,322</td>
+<td headers="stub_1_16 median_best_costs" class="gt_row gt_right">242,793</td>
+<td headers="stub_1_16 sd_best_costs" class="gt_row gt_right">44,062</td>
+<td headers="stub_1_16 n" class="gt_row gt_right">25</td></tr>
+    <tr><th id="stub_1_17" scope="row" class="gt_row gt_center gt_stub">Sobol</th>
+<td headers="stub_1_17 bom_id" class="gt_row gt_center">100</td>
+<td headers="stub_1_17 avg_best_costs" class="gt_row gt_right">751,281</td>
+<td headers="stub_1_17 median_best_costs" class="gt_row gt_right">740,880</td>
+<td headers="stub_1_17 sd_best_costs" class="gt_row gt_right">260,064</td>
+<td headers="stub_1_17 n" class="gt_row gt_right">15</td></tr>
+    <tr><th id="stub_1_18" scope="row" class="gt_row gt_center gt_stub">GPEI</th>
+<td headers="stub_1_18 bom_id" class="gt_row gt_center">100</td>
+<td headers="stub_1_18 avg_best_costs" class="gt_row gt_right">369,498</td>
+<td headers="stub_1_18 median_best_costs" class="gt_row gt_right">372,070</td>
+<td headers="stub_1_18 sd_best_costs" class="gt_row gt_right">33,358</td>
+<td headers="stub_1_18 n" class="gt_row gt_right">15</td></tr>
+    <tr><th id="stub_1_19" scope="row" class="gt_row gt_center gt_stub">TurBO</th>
+<td headers="stub_1_19 bom_id" class="gt_row gt_center">100</td>
+<td headers="stub_1_19 avg_best_costs" class="gt_row gt_right">468,014</td>
+<td headers="stub_1_19 median_best_costs" class="gt_row gt_right">444,405</td>
+<td headers="stub_1_19 sd_best_costs" class="gt_row gt_right">124,119</td>
+<td headers="stub_1_19 n" class="gt_row gt_right">15</td></tr>
+    <tr><th id="stub_1_20" scope="row" class="gt_row gt_center gt_stub">CMA-ES</th>
+<td headers="stub_1_20 bom_id" class="gt_row gt_center">100</td>
+<td headers="stub_1_20 avg_best_costs" class="gt_row gt_right">420,196</td>
+<td headers="stub_1_20 median_best_costs" class="gt_row gt_right">418,767</td>
+<td headers="stub_1_20 sd_best_costs" class="gt_row gt_right">64,201</td>
+<td headers="stub_1_20 n" class="gt_row gt_right">5</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="table-with-best-absolute" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="table-with-best-absolute"><span class="header-section-number">4.5</span> Table with Best Absolute</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>experiments <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(experiment_id, bom_id, algorithm, budget, replication) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min_costs =</span> <span class="fu">min</span>(candidate_y_costs_mean)) <span class="sc">|&gt;</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(bom_id, algorithm) <span class="sc">|&gt;</span> </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">abs_min_costs =</span> <span class="fu">min</span>(min_costs),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">avg_best_costs =</span> <span class="fu">mean</span>(min_costs),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">median_best_costs =</span> <span class="fu">quantile</span>(min_costs, <span class="fl">0.5</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_best_costs =</span> <span class="fu">sd</span>(min_costs),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>   <span class="fu">cols_label</span>(</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_best_costs =</span> <span class="fu">md</span>(<span class="st">"Mean"</span>),</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_best_costs =</span> <span class="fu">md</span>(<span class="st">"Median"</span>),</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_best_costs =</span> <span class="fu">md</span>(<span class="st">"SD"</span>),</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">bom_id =</span> <span class="fu">md</span>(<span class="st">"BOM"</span>),</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">algorithm =</span> <span class="fu">md</span>(<span class="st">"Algorithm"</span>),</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">abs_min_costs =</span> <span class="fu">md</span>(<span class="st">"Absolute Best"</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">table.font.name =</span> <span class="st">"Times New Roman"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">opt_row_striping</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="lobnnbqvgc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lobnnbqvgc table {
+  font-family: 'Times New Roman';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#lobnnbqvgc thead, #lobnnbqvgc tbody, #lobnnbqvgc tfoot, #lobnnbqvgc tr, #lobnnbqvgc td, #lobnnbqvgc th {
+  border-style: none;
+}
+
+#lobnnbqvgc p {
+  margin: 0;
+  padding: 0;
+}
+
+#lobnnbqvgc .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#lobnnbqvgc .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lobnnbqvgc .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lobnnbqvgc .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lobnnbqvgc .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lobnnbqvgc .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lobnnbqvgc .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lobnnbqvgc .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lobnnbqvgc .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#lobnnbqvgc .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#lobnnbqvgc .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lobnnbqvgc .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lobnnbqvgc .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lobnnbqvgc .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lobnnbqvgc .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lobnnbqvgc .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lobnnbqvgc .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#lobnnbqvgc .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#lobnnbqvgc .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lobnnbqvgc .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lobnnbqvgc .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lobnnbqvgc .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lobnnbqvgc .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lobnnbqvgc .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lobnnbqvgc .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lobnnbqvgc .gt_left {
+  text-align: left;
+}
+
+#lobnnbqvgc .gt_center {
+  text-align: center;
+}
+
+#lobnnbqvgc .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lobnnbqvgc .gt_font_normal {
+  font-weight: normal;
+}
+
+#lobnnbqvgc .gt_font_bold {
+  font-weight: bold;
+}
+
+#lobnnbqvgc .gt_font_italic {
+  font-style: italic;
+}
+
+#lobnnbqvgc .gt_super {
+  font-size: 65%;
+}
+
+#lobnnbqvgc .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#lobnnbqvgc .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lobnnbqvgc .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#lobnnbqvgc .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#lobnnbqvgc .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#lobnnbqvgc .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#lobnnbqvgc .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="BOM">BOM</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="Algorithm">Algorithm</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Absolute Best">Absolute Best</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Mean">Mean</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Median">Median</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="SD">SD</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="n">n</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="bom_id" class="gt_row gt_center">4</td>
+<td headers="algorithm" class="gt_row gt_center">Sobol</td>
+<td headers="abs_min_costs" class="gt_row gt_right">17032.4</td>
+<td headers="avg_best_costs" class="gt_row gt_right">25427.31</td>
+<td headers="median_best_costs" class="gt_row gt_right">25164.2</td>
+<td headers="sd_best_costs" class="gt_row gt_right">4042.419</td>
+<td headers="n" class="gt_row gt_right">190</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">4</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">GPEI</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">12983.6</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">21698.47</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">21367.2</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">5555.013</td>
+<td headers="n" class="gt_row gt_right gt_striped">167</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">4</td>
+<td headers="algorithm" class="gt_row gt_center">TurBO</td>
+<td headers="abs_min_costs" class="gt_row gt_right">14391.6</td>
+<td headers="avg_best_costs" class="gt_row gt_right">18793.58</td>
+<td headers="median_best_costs" class="gt_row gt_right">18085.0</td>
+<td headers="sd_best_costs" class="gt_row gt_right">2889.239</td>
+<td headers="n" class="gt_row gt_right">166</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">4</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">CMA-ES</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">13381.4</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">24482.52</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">21299.2</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">10572.547</td>
+<td headers="n" class="gt_row gt_right gt_striped">171</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">4</td>
+<td headers="algorithm" class="gt_row gt_center">SAASBO</td>
+<td headers="abs_min_costs" class="gt_row gt_right">13960.4</td>
+<td headers="avg_best_costs" class="gt_row gt_right">17484.78</td>
+<td headers="median_best_costs" class="gt_row gt_right">16902.6</td>
+<td headers="sd_best_costs" class="gt_row gt_right">2010.345</td>
+<td headers="n" class="gt_row gt_right">40</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">10</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">Sobol</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">37933.2</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">47975.38</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">47197.4</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">4451.562</td>
+<td headers="n" class="gt_row gt_right gt_striped">255</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">10</td>
+<td headers="algorithm" class="gt_row gt_center">GPEI</td>
+<td headers="abs_min_costs" class="gt_row gt_right">38202.8</td>
+<td headers="avg_best_costs" class="gt_row gt_right">46681.70</td>
+<td headers="median_best_costs" class="gt_row gt_right">45835.8</td>
+<td headers="sd_best_costs" class="gt_row gt_right">5295.184</td>
+<td headers="n" class="gt_row gt_right">294</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">10</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">TurBO</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">34621.4</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">44279.53</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">43616.0</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">4253.482</td>
+<td headers="n" class="gt_row gt_right gt_striped">234</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">10</td>
+<td headers="algorithm" class="gt_row gt_center">CMA-ES</td>
+<td headers="abs_min_costs" class="gt_row gt_right">35828.6</td>
+<td headers="avg_best_costs" class="gt_row gt_right">48220.34</td>
+<td headers="median_best_costs" class="gt_row gt_right">47417.9</td>
+<td headers="sd_best_costs" class="gt_row gt_right">8359.313</td>
+<td headers="n" class="gt_row gt_right">150</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">10</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">SAASBO</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">36013.4</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">42383.86</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">41249.6</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">5196.906</td>
+<td headers="n" class="gt_row gt_right gt_striped">10</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">20</td>
+<td headers="algorithm" class="gt_row gt_center">Sobol</td>
+<td headers="abs_min_costs" class="gt_row gt_right">44554.0</td>
+<td headers="avg_best_costs" class="gt_row gt_right">53752.86</td>
+<td headers="median_best_costs" class="gt_row gt_right">53177.6</td>
+<td headers="sd_best_costs" class="gt_row gt_right">5067.761</td>
+<td headers="n" class="gt_row gt_right">150</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">20</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">GPEI</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">38906.0</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">52797.44</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">52376.2</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">6688.489</td>
+<td headers="n" class="gt_row gt_right gt_striped">110</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">20</td>
+<td headers="algorithm" class="gt_row gt_center">TurBO</td>
+<td headers="abs_min_costs" class="gt_row gt_right">36626.8</td>
+<td headers="avg_best_costs" class="gt_row gt_right">47827.84</td>
+<td headers="median_best_costs" class="gt_row gt_right">47467.8</td>
+<td headers="sd_best_costs" class="gt_row gt_right">4926.441</td>
+<td headers="n" class="gt_row gt_right">110</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">20</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">CMA-ES</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">36440.4</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">51420.06</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">49153.6</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">9568.285</td>
+<td headers="n" class="gt_row gt_right gt_striped">130</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">20</td>
+<td headers="algorithm" class="gt_row gt_center">SAASBO</td>
+<td headers="abs_min_costs" class="gt_row gt_right">36702.6</td>
+<td headers="avg_best_costs" class="gt_row gt_right">42863.91</td>
+<td headers="median_best_costs" class="gt_row gt_right">41936.8</td>
+<td headers="sd_best_costs" class="gt_row gt_right">5532.958</td>
+<td headers="n" class="gt_row gt_right">13</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">50</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">Sobol</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">190086.2</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">242117.65</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">239925.8</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">31513.576</td>
+<td headers="n" class="gt_row gt_right gt_striped">115</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">50</td>
+<td headers="algorithm" class="gt_row gt_center">GPEI</td>
+<td headers="abs_min_costs" class="gt_row gt_right">193817.6</td>
+<td headers="avg_best_costs" class="gt_row gt_right">237870.04</td>
+<td headers="median_best_costs" class="gt_row gt_right">233201.2</td>
+<td headers="sd_best_costs" class="gt_row gt_right">25000.603</td>
+<td headers="n" class="gt_row gt_right">115</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">50</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">TurBO</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">166340.4</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">243370.60</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">239657.6</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">37476.057</td>
+<td headers="n" class="gt_row gt_right gt_striped">130</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">50</td>
+<td headers="algorithm" class="gt_row gt_center">CMA-ES</td>
+<td headers="abs_min_costs" class="gt_row gt_right">184991.4</td>
+<td headers="avg_best_costs" class="gt_row gt_right">284212.29</td>
+<td headers="median_best_costs" class="gt_row gt_right">277536.1</td>
+<td headers="sd_best_costs" class="gt_row gt_right">55291.195</td>
+<td headers="n" class="gt_row gt_right">120</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">100</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">Sobol</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">378105.2</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">1476141.71</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">1257125.4</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">883427.988</td>
+<td headers="n" class="gt_row gt_right gt_striped">131</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">100</td>
+<td headers="algorithm" class="gt_row gt_center">GPEI</td>
+<td headers="abs_min_costs" class="gt_row gt_right">300594.0</td>
+<td headers="avg_best_costs" class="gt_row gt_right">998019.30</td>
+<td headers="median_best_costs" class="gt_row gt_right">610016.8</td>
+<td headers="sd_best_costs" class="gt_row gt_right">897051.397</td>
+<td headers="n" class="gt_row gt_right">114</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center gt_striped">100</td>
+<td headers="algorithm" class="gt_row gt_center gt_striped">TurBO</td>
+<td headers="abs_min_costs" class="gt_row gt_right gt_striped">238459.0</td>
+<td headers="avg_best_costs" class="gt_row gt_right gt_striped">956354.97</td>
+<td headers="median_best_costs" class="gt_row gt_right gt_striped">572872.6</td>
+<td headers="sd_best_costs" class="gt_row gt_right gt_striped">805430.138</td>
+<td headers="n" class="gt_row gt_right gt_striped">115</td></tr>
+    <tr><td headers="bom_id" class="gt_row gt_center">100</td>
+<td headers="algorithm" class="gt_row gt_center">CMA-ES</td>
+<td headers="abs_min_costs" class="gt_row gt_right">284882.2</td>
+<td headers="avg_best_costs" class="gt_row gt_right">1633244.20</td>
+<td headers="median_best_costs" class="gt_row gt_right">751688.5</td>
+<td headers="sd_best_costs" class="gt_row gt_right">1893583.563</td>
+<td headers="n" class="gt_row gt_right">90</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./exploration.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Exploration</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./results_summary.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Results Summary</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

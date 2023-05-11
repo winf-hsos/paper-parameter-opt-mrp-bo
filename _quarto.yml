@@ -16,6 +16,7 @@ book:
     - data.qmd
     - transformations.qmd
     - exploration.qmd
+    - paper.qmd
     - results_summary.qmd
     - convergence.qmd
     - reliability.qmd

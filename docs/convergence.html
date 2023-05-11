@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>MRP Parameter Optimization with BO - 5&nbsp; Convergence</title>
+<title>MRP Parameter Optimization with BO - 6&nbsp; Convergence</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -136,7 +136,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Convergence</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Convergence</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -181,22 +181,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./results_summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Results Summary</span></a>
+  <a href="./paper.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Paper</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./convergence.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Convergence</span></a>
+  <a href="./results_summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Results Summary</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reliability.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Reliability</span></a>
+  <a href="./convergence.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Convergence</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./sobol.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Sobol</span></a>
+  <a href="./reliability.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Reliability</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sobol.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Sobol</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -213,12 +218,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#dimensional" id="toc-dimensional" class="nav-link active" data-scroll-target="#dimensional"><span class="toc-section-number">5.1</span>  4-dimensional</a></li>
-  <li><a href="#dimensional-1" id="toc-dimensional-1" class="nav-link" data-scroll-target="#dimensional-1"><span class="toc-section-number">5.2</span>  10-dimensional</a></li>
-  <li><a href="#dimensional-2" id="toc-dimensional-2" class="nav-link" data-scroll-target="#dimensional-2"><span class="toc-section-number">5.3</span>  20-dimensional</a></li>
-  <li><a href="#dimensional-3" id="toc-dimensional-3" class="nav-link" data-scroll-target="#dimensional-3"><span class="toc-section-number">5.4</span>  50-dimensional</a></li>
-  <li><a href="#dimensional-4" id="toc-dimensional-4" class="nav-link" data-scroll-target="#dimensional-4"><span class="toc-section-number">5.5</span>  100-dimensional</a></li>
-  <li><a href="#best-points-found-by-algorithm" id="toc-best-points-found-by-algorithm" class="nav-link" data-scroll-target="#best-points-found-by-algorithm"><span class="toc-section-number">6</span>  Best Points Found By Algorithm</a></li>
+  <li><a href="#dimensional" id="toc-dimensional" class="nav-link active" data-scroll-target="#dimensional"><span class="toc-section-number">6.1</span>  4-dimensional</a></li>
+  <li><a href="#dimensional-1" id="toc-dimensional-1" class="nav-link" data-scroll-target="#dimensional-1"><span class="toc-section-number">6.2</span>  10-dimensional</a></li>
+  <li><a href="#dimensional-2" id="toc-dimensional-2" class="nav-link" data-scroll-target="#dimensional-2"><span class="toc-section-number">6.3</span>  20-dimensional</a></li>
+  <li><a href="#dimensional-3" id="toc-dimensional-3" class="nav-link" data-scroll-target="#dimensional-3"><span class="toc-section-number">6.4</span>  50-dimensional</a></li>
+  <li><a href="#dimensional-4" id="toc-dimensional-4" class="nav-link" data-scroll-target="#dimensional-4"><span class="toc-section-number">6.5</span>  100-dimensional</a></li>
+  <li><a href="#best-points-found-by-algorithm" id="toc-best-points-found-by-algorithm" class="nav-link" data-scroll-target="#best-points-found-by-algorithm"><span class="toc-section-number">7</span>  Best Points Found By Algorithm</a></li>
   </ul>
 </nav>
     </div>
@@ -227,7 +232,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Convergence</span></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Convergence</span></h1>
 </div>
 
 
@@ -248,8 +253,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"_common.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="dimensional" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="dimensional"><span class="header-section-number">5.1</span> 4-dimensional</h2>
+<section id="dimensional" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="dimensional"><span class="header-section-number">6.1</span> 4-dimensional</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -321,8 +326,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="dimensional-1" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="dimensional-1"><span class="header-section-number">5.2</span> 10-dimensional</h2>
+<section id="dimensional-1" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="dimensional-1"><span class="header-section-number">6.2</span> 10-dimensional</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -350,8 +355,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="dimensional-2" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="dimensional-2"><span class="header-section-number">5.3</span> 20-dimensional</h2>
+<section id="dimensional-2" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="dimensional-2"><span class="header-section-number">6.3</span> 20-dimensional</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -379,8 +384,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="dimensional-3" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="dimensional-3"><span class="header-section-number">5.4</span> 50-dimensional</h2>
+<section id="dimensional-3" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="dimensional-3"><span class="header-section-number">6.4</span> 50-dimensional</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -408,8 +413,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="dimensional-4" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="dimensional-4"><span class="header-section-number">5.5</span> 100-dimensional</h2>
+<section id="dimensional-4" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="dimensional-4"><span class="header-section-number">6.5</span> 100-dimensional</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -437,8 +442,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="best-points-found-by-algorithm" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Best Points Found By Algorithm</h1>
+<section id="best-points-found-by-algorithm" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Best Points Found By Algorithm</h1>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -588,12 +593,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./results_summary.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Results Summary</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Results Summary</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./reliability.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Reliability</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Reliability</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
