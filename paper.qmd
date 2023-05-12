@@ -168,9 +168,6 @@ plot_300 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "300", 60,
 plot_500 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "500", 100, y_lims)
 plot_1000 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "1000", 200, y_lims)
 
-plot_200
-#plot_1000
-
 plot_grid(plot_40, 
           plot_100, 
           plot_200, 

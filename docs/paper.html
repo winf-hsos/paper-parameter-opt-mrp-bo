@@ -313,7 +313,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 26 x 4
+<pre><code># A tibble: 27 x 4
 # Groups:   algorithm, bom_id [5]
    algorithm bom_id budget n_replications
    &lt;fct&gt;     &lt;fct&gt;  &lt;fct&gt;           &lt;int&gt;
@@ -342,7 +342,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 23 CMA-ES    20     500                15
 24 CMA-ES    20     1000               15
 25 SAASBO    20     40                 10
-26 SAASBO    20     200                 3</code></pre>
+26 SAASBO    20     100                 2
+27 SAASBO    20     200                 3</code></pre>
 </div>
 </div>
 </section>
@@ -448,25 +449,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>plot_500 <span class="ot">&lt;-</span> <span class="fu">plot_convergence_by_bom__and_budget</span>(exp_bom_20, p_bom_id, <span class="st">"500"</span>, <span class="dv">100</span>, y_lims)</span>
 <span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>plot_1000 <span class="ot">&lt;-</span> <span class="fu">plot_convergence_by_bom__and_budget</span>(exp_bom_20, p_bom_id, <span class="st">"1000"</span>, <span class="dv">200</span>, y_lims)</span>
 <span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>plot_200</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(plot_40, </span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>          plot_100, </span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>          plot_200, </span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>          plot_300,</span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>          plot_500, </span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>          plot_1000, </span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="paper_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plot_1000</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(plot_40, </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>          plot_100, </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>          plot_200, </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>          plot_300,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>          plot_500, </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>          plot_1000, </span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="paper_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -475,51 +467,51 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("gt")</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>experiments <span class="sc">|&gt;</span> </span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(budget <span class="sc">==</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(experiment_id, bom_id, algorithm, budget, replication) <span class="sc">|&gt;</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min_costs =</span> <span class="fu">min</span>(candidate_y_costs_mean)) <span class="sc">|&gt;</span> </span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(bom_id, algorithm) <span class="sc">|&gt;</span> </span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_best_costs =</span> <span class="fu">mean</span>(min_costs),</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">median_best_costs =</span> <span class="fu">quantile</span>(min_costs, <span class="fl">0.5</span>),</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_best_costs =</span> <span class="fu">sd</span>(min_costs),</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"algorithm"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_best_costs =</span> <span class="fu">md</span>(<span class="st">"Mean"</span>),</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_best_costs =</span> <span class="fu">md</span>(<span class="st">"Median"</span>),</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_best_costs =</span> <span class="fu">md</span>(<span class="st">"SD"</span>),</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">bom_id =</span> <span class="fu">md</span>(<span class="st">"BOM"</span>)</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"avg_best_costs"</span>, <span class="st">"median_best_costs"</span>, <span class="st">"sd_best_costs"</span>),</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">decimals =</span> <span class="dv">0</span>,</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("gt")</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>experiments <span class="sc">|&gt;</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(budget <span class="sc">==</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(experiment_id, bom_id, algorithm, budget, replication) <span class="sc">|&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min_costs =</span> <span class="fu">min</span>(candidate_y_costs_mean)) <span class="sc">|&gt;</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(bom_id, algorithm) <span class="sc">|&gt;</span> </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_best_costs =</span> <span class="fu">mean</span>(min_costs),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">median_best_costs =</span> <span class="fu">quantile</span>(min_costs, <span class="fl">0.5</span>),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_best_costs =</span> <span class="fu">sd</span>(min_costs),</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"algorithm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_best_costs =</span> <span class="fu">md</span>(<span class="st">"Mean"</span>),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_best_costs =</span> <span class="fu">md</span>(<span class="st">"Median"</span>),</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_best_costs =</span> <span class="fu">md</span>(<span class="st">"SD"</span>),</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">bom_id =</span> <span class="fu">md</span>(<span class="st">"BOM"</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"avg_best_costs"</span>, <span class="st">"median_best_costs"</span>, <span class="st">"sd_best_costs"</span>),</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">decimals =</span> <span class="dv">0</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 
-<div id="rkxhosaunw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#rkxhosaunw table {
+<div id="xteahbikwj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#xteahbikwj table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#rkxhosaunw thead, #rkxhosaunw tbody, #rkxhosaunw tfoot, #rkxhosaunw tr, #rkxhosaunw td, #rkxhosaunw th {
+#xteahbikwj thead, #xteahbikwj tbody, #xteahbikwj tfoot, #xteahbikwj tr, #xteahbikwj td, #xteahbikwj th {
   border-style: none;
 }
 
-#rkxhosaunw p {
+#xteahbikwj p {
   margin: 0;
   padding: 0;
 }
 
-#rkxhosaunw .gt_table {
+#xteahbikwj .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -545,12 +537,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-left-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_caption {
+#xteahbikwj .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#rkxhosaunw .gt_title {
+#xteahbikwj .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -562,7 +554,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-width: 0;
 }
 
-#rkxhosaunw .gt_subtitle {
+#xteahbikwj .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -574,7 +566,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-top-width: 0;
 }
 
-#rkxhosaunw .gt_heading {
+#xteahbikwj .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -586,13 +578,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_bottom_border {
+#xteahbikwj .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_col_headings {
+#xteahbikwj .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -607,7 +599,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_col_heading {
+#xteahbikwj .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -627,7 +619,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   overflow-x: hidden;
 }
 
-#rkxhosaunw .gt_column_spanner_outer {
+#xteahbikwj .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -639,15 +631,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 4px;
 }
 
-#rkxhosaunw .gt_column_spanner_outer:first-child {
+#xteahbikwj .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#rkxhosaunw .gt_column_spanner_outer:last-child {
+#xteahbikwj .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#rkxhosaunw .gt_column_spanner {
+#xteahbikwj .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -659,11 +651,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   width: 100%;
 }
 
-#rkxhosaunw .gt_spanner_row {
+#xteahbikwj .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#rkxhosaunw .gt_group_heading {
+#xteahbikwj .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -689,7 +681,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   text-align: left;
 }
 
-#rkxhosaunw .gt_empty_group_heading {
+#xteahbikwj .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -704,15 +696,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: middle;
 }
 
-#rkxhosaunw .gt_from_md > :first-child {
+#xteahbikwj .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#rkxhosaunw .gt_from_md > :last-child {
+#xteahbikwj .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#rkxhosaunw .gt_row {
+#xteahbikwj .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -731,7 +723,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   overflow-x: hidden;
 }
 
-#rkxhosaunw .gt_stub {
+#xteahbikwj .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -744,7 +736,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#rkxhosaunw .gt_stub_row_group {
+#xteahbikwj .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -758,15 +750,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: top;
 }
 
-#rkxhosaunw .gt_row_group_first td {
+#xteahbikwj .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#rkxhosaunw .gt_row_group_first th {
+#xteahbikwj .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#rkxhosaunw .gt_summary_row {
+#xteahbikwj .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -776,16 +768,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#rkxhosaunw .gt_first_summary_row {
+#xteahbikwj .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_first_summary_row.thick {
+#xteahbikwj .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#rkxhosaunw .gt_last_summary_row {
+#xteahbikwj .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -795,7 +787,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_grand_summary_row {
+#xteahbikwj .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -805,7 +797,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#rkxhosaunw .gt_first_grand_summary_row {
+#xteahbikwj .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -815,7 +807,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-top-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_last_grand_summary_row_top {
+#xteahbikwj .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -825,11 +817,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_striped {
+#xteahbikwj .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#rkxhosaunw .gt_table_body {
+#xteahbikwj .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -838,7 +830,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_footnotes {
+#xteahbikwj .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -852,7 +844,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_footnote {
+#xteahbikwj .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -861,7 +853,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#rkxhosaunw .gt_sourcenotes {
+#xteahbikwj .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -875,7 +867,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-#rkxhosaunw .gt_sourcenote {
+#xteahbikwj .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -883,63 +875,63 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#rkxhosaunw .gt_left {
+#xteahbikwj .gt_left {
   text-align: left;
 }
 
-#rkxhosaunw .gt_center {
+#xteahbikwj .gt_center {
   text-align: center;
 }
 
-#rkxhosaunw .gt_right {
+#xteahbikwj .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#rkxhosaunw .gt_font_normal {
+#xteahbikwj .gt_font_normal {
   font-weight: normal;
 }
 
-#rkxhosaunw .gt_font_bold {
+#xteahbikwj .gt_font_bold {
   font-weight: bold;
 }
 
-#rkxhosaunw .gt_font_italic {
+#xteahbikwj .gt_font_italic {
   font-style: italic;
 }
 
-#rkxhosaunw .gt_super {
+#xteahbikwj .gt_super {
   font-size: 65%;
 }
 
-#rkxhosaunw .gt_footnote_marks {
+#xteahbikwj .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#rkxhosaunw .gt_asterisk {
+#xteahbikwj .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#rkxhosaunw .gt_indent_1 {
+#xteahbikwj .gt_indent_1 {
   text-indent: 5px;
 }
 
-#rkxhosaunw .gt_indent_2 {
+#xteahbikwj .gt_indent_2 {
   text-indent: 10px;
 }
 
-#rkxhosaunw .gt_indent_3 {
+#xteahbikwj .gt_indent_3 {
   text-indent: 15px;
 }
 
-#rkxhosaunw .gt_indent_4 {
+#xteahbikwj .gt_indent_4 {
   text-indent: 20px;
 }
 
-#rkxhosaunw .gt_indent_5 {
+#xteahbikwj .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1089,49 +1081,49 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>experiments <span class="sc">|&gt;</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(experiment_id, bom_id, algorithm, budget, replication) <span class="sc">|&gt;</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min_costs =</span> <span class="fu">min</span>(candidate_y_costs_mean)) <span class="sc">|&gt;</span> </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(bom_id, algorithm) <span class="sc">|&gt;</span> </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">abs_min_costs =</span> <span class="fu">min</span>(min_costs),</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">avg_best_costs =</span> <span class="fu">mean</span>(min_costs),</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">median_best_costs =</span> <span class="fu">quantile</span>(min_costs, <span class="fl">0.5</span>),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_best_costs =</span> <span class="fu">sd</span>(min_costs),</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>   <span class="fu">cols_label</span>(</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_best_costs =</span> <span class="fu">md</span>(<span class="st">"Mean"</span>),</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_best_costs =</span> <span class="fu">md</span>(<span class="st">"Median"</span>),</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_best_costs =</span> <span class="fu">md</span>(<span class="st">"SD"</span>),</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">bom_id =</span> <span class="fu">md</span>(<span class="st">"BOM"</span>),</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">algorithm =</span> <span class="fu">md</span>(<span class="st">"Algorithm"</span>),</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">abs_min_costs =</span> <span class="fu">md</span>(<span class="st">"Absolute Best"</span>)</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">table.font.name =</span> <span class="st">"Times New Roman"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">opt_row_striping</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>experiments <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(experiment_id, bom_id, algorithm, budget, replication) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min_costs =</span> <span class="fu">min</span>(candidate_y_costs_mean)) <span class="sc">|&gt;</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(bom_id, algorithm) <span class="sc">|&gt;</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">abs_min_costs =</span> <span class="fu">min</span>(min_costs),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">avg_best_costs =</span> <span class="fu">mean</span>(min_costs),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">median_best_costs =</span> <span class="fu">quantile</span>(min_costs, <span class="fl">0.5</span>),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_best_costs =</span> <span class="fu">sd</span>(min_costs),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>   <span class="fu">cols_label</span>(</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_best_costs =</span> <span class="fu">md</span>(<span class="st">"Mean"</span>),</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_best_costs =</span> <span class="fu">md</span>(<span class="st">"Median"</span>),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_best_costs =</span> <span class="fu">md</span>(<span class="st">"SD"</span>),</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">bom_id =</span> <span class="fu">md</span>(<span class="st">"BOM"</span>),</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">algorithm =</span> <span class="fu">md</span>(<span class="st">"Algorithm"</span>),</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">abs_min_costs =</span> <span class="fu">md</span>(<span class="st">"Absolute Best"</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">table.font.name =</span> <span class="st">"Times New Roman"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">opt_row_striping</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 
-<div id="lobnnbqvgc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#lobnnbqvgc table {
+<div id="svlbjtuwwx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#svlbjtuwwx table {
   font-family: 'Times New Roman';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#lobnnbqvgc thead, #lobnnbqvgc tbody, #lobnnbqvgc tfoot, #lobnnbqvgc tr, #lobnnbqvgc td, #lobnnbqvgc th {
+#svlbjtuwwx thead, #svlbjtuwwx tbody, #svlbjtuwwx tfoot, #svlbjtuwwx tr, #svlbjtuwwx td, #svlbjtuwwx th {
   border-style: none;
 }
 
-#lobnnbqvgc p {
+#svlbjtuwwx p {
   margin: 0;
   padding: 0;
 }
 
-#lobnnbqvgc .gt_table {
+#svlbjtuwwx .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1157,12 +1149,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-left-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_caption {
+#svlbjtuwwx .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#lobnnbqvgc .gt_title {
+#svlbjtuwwx .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1174,7 +1166,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-width: 0;
 }
 
-#lobnnbqvgc .gt_subtitle {
+#svlbjtuwwx .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1186,7 +1178,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-top-width: 0;
 }
 
-#lobnnbqvgc .gt_heading {
+#svlbjtuwwx .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1198,13 +1190,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_bottom_border {
+#svlbjtuwwx .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_col_headings {
+#svlbjtuwwx .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1219,7 +1211,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_col_heading {
+#svlbjtuwwx .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1239,7 +1231,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   overflow-x: hidden;
 }
 
-#lobnnbqvgc .gt_column_spanner_outer {
+#svlbjtuwwx .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1251,15 +1243,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 4px;
 }
 
-#lobnnbqvgc .gt_column_spanner_outer:first-child {
+#svlbjtuwwx .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#lobnnbqvgc .gt_column_spanner_outer:last-child {
+#svlbjtuwwx .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#lobnnbqvgc .gt_column_spanner {
+#svlbjtuwwx .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1271,11 +1263,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   width: 100%;
 }
 
-#lobnnbqvgc .gt_spanner_row {
+#svlbjtuwwx .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#lobnnbqvgc .gt_group_heading {
+#svlbjtuwwx .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1301,7 +1293,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   text-align: left;
 }
 
-#lobnnbqvgc .gt_empty_group_heading {
+#svlbjtuwwx .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1316,15 +1308,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: middle;
 }
 
-#lobnnbqvgc .gt_from_md > :first-child {
+#svlbjtuwwx .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#lobnnbqvgc .gt_from_md > :last-child {
+#svlbjtuwwx .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#lobnnbqvgc .gt_row {
+#svlbjtuwwx .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1343,7 +1335,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   overflow-x: hidden;
 }
 
-#lobnnbqvgc .gt_stub {
+#svlbjtuwwx .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1356,7 +1348,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#lobnnbqvgc .gt_stub_row_group {
+#svlbjtuwwx .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1370,15 +1362,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   vertical-align: top;
 }
 
-#lobnnbqvgc .gt_row_group_first td {
+#svlbjtuwwx .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#lobnnbqvgc .gt_row_group_first th {
+#svlbjtuwwx .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#lobnnbqvgc .gt_summary_row {
+#svlbjtuwwx .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1388,16 +1380,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#lobnnbqvgc .gt_first_summary_row {
+#svlbjtuwwx .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_first_summary_row.thick {
+#svlbjtuwwx .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#lobnnbqvgc .gt_last_summary_row {
+#svlbjtuwwx .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1407,7 +1399,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_grand_summary_row {
+#svlbjtuwwx .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1417,7 +1409,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#lobnnbqvgc .gt_first_grand_summary_row {
+#svlbjtuwwx .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1427,7 +1419,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-top-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_last_grand_summary_row_top {
+#svlbjtuwwx .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1437,11 +1429,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_striped {
+#svlbjtuwwx .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#lobnnbqvgc .gt_table_body {
+#svlbjtuwwx .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1450,7 +1442,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-bottom-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_footnotes {
+#svlbjtuwwx .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1464,7 +1456,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_footnote {
+#svlbjtuwwx .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1473,7 +1465,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#lobnnbqvgc .gt_sourcenotes {
+#svlbjtuwwx .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1487,7 +1479,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   border-right-color: #D3D3D3;
 }
 
-#lobnnbqvgc .gt_sourcenote {
+#svlbjtuwwx .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1495,63 +1487,63 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   padding-right: 5px;
 }
 
-#lobnnbqvgc .gt_left {
+#svlbjtuwwx .gt_left {
   text-align: left;
 }
 
-#lobnnbqvgc .gt_center {
+#svlbjtuwwx .gt_center {
   text-align: center;
 }
 
-#lobnnbqvgc .gt_right {
+#svlbjtuwwx .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#lobnnbqvgc .gt_font_normal {
+#svlbjtuwwx .gt_font_normal {
   font-weight: normal;
 }
 
-#lobnnbqvgc .gt_font_bold {
+#svlbjtuwwx .gt_font_bold {
   font-weight: bold;
 }
 
-#lobnnbqvgc .gt_font_italic {
+#svlbjtuwwx .gt_font_italic {
   font-style: italic;
 }
 
-#lobnnbqvgc .gt_super {
+#svlbjtuwwx .gt_super {
   font-size: 65%;
 }
 
-#lobnnbqvgc .gt_footnote_marks {
+#svlbjtuwwx .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#lobnnbqvgc .gt_asterisk {
+#svlbjtuwwx .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#lobnnbqvgc .gt_indent_1 {
+#svlbjtuwwx .gt_indent_1 {
   text-indent: 5px;
 }
 
-#lobnnbqvgc .gt_indent_2 {
+#svlbjtuwwx .gt_indent_2 {
   text-indent: 10px;
 }
 
-#lobnnbqvgc .gt_indent_3 {
+#svlbjtuwwx .gt_indent_3 {
   text-indent: 15px;
 }
 
-#lobnnbqvgc .gt_indent_4 {
+#svlbjtuwwx .gt_indent_4 {
   text-indent: 20px;
 }
 
-#lobnnbqvgc .gt_indent_5 {
+#svlbjtuwwx .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1669,11 +1661,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td headers="n" class="gt_row gt_right gt_striped">130</td></tr>
     <tr><td headers="bom_id" class="gt_row gt_center">20</td>
 <td headers="algorithm" class="gt_row gt_center">SAASBO</td>
-<td headers="abs_min_costs" class="gt_row gt_right">36702.6</td>
-<td headers="avg_best_costs" class="gt_row gt_right">42863.91</td>
-<td headers="median_best_costs" class="gt_row gt_right">41936.8</td>
-<td headers="sd_best_costs" class="gt_row gt_right">5532.958</td>
-<td headers="n" class="gt_row gt_right">13</td></tr>
+<td headers="abs_min_costs" class="gt_row gt_right">34799.0</td>
+<td headers="avg_best_costs" class="gt_row gt_right">41911.59</td>
+<td headers="median_best_costs" class="gt_row gt_right">41921.6</td>
+<td headers="sd_best_costs" class="gt_row gt_right">5716.454</td>
+<td headers="n" class="gt_row gt_right">15</td></tr>
     <tr><td headers="bom_id" class="gt_row gt_center gt_striped">50</td>
 <td headers="algorithm" class="gt_row gt_center gt_striped">Sobol</td>
 <td headers="abs_min_costs" class="gt_row gt_right gt_striped">190086.2</td>
