@@ -124,7 +124,7 @@ plot_convergence_by_bom__and_budget <- function(data, p_bom_id, p_budget, num_in
   
   ggplot() +
   aes(x = candidate_id, y = running_min_costs, color = algorithm, fill = algorithm) +
-  geom_smooth(level = 0.95, linewidth = 0.9, method = "loess", span = 0.6, se = FALSE, alpha = 0.2) +
+  geom_smooth(level = 0.95, linewidth = 0.9, method = "loess", span = 0.5, se = FALSE, alpha = 0.2) +
   geom_vline(xintercept = num_init, linetype = "dashed") +
   scale_color_manual(values = algorithm_colors) +
   scale_fill_manual(values = algorithm_colors) +
@@ -159,7 +159,7 @@ plot_convergence_by_bom__and_budget <- function(data, p_bom_id, p_budget, num_in
 }
 
 p_bom_id <- "20"
-y_lims <- c(37000, 80000)
+y_lims <- c(35000, 80000)
 
 plot_40 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "40", 8, y_lims)
 plot_100 <- plot_convergence_by_bom__and_budget(exp_bom_20, p_bom_id, "100", 20, y_lims)
@@ -184,25 +184,23 @@ plot_grid(plot_40,
 library(gt)
 
 experiments |> 
-  filter(budget == 1000) |> 
+  #filter(budget == 1000) |> 
   group_by(experiment_id, bom_id, algorithm, budget, replication) |>
   summarize(min_costs = min(candidate_y_costs_mean)) |> 
   ungroup() |> 
   group_by(bom_id, algorithm) |> 
-  summarize(avg_best_costs = mean(min_costs),
-            median_best_costs = quantile(min_costs, 0.5),
+  summarize(median_best_costs = quantile(min_costs, 0.5),
             sd_best_costs = sd(min_costs),
             n = n()) |> 
   ungroup() |> 
   gt(rowname_col = "algorithm") |> 
   cols_label(
-    avg_best_costs = md("Mean"),
     median_best_costs = md("Median"),
     sd_best_costs = md("SD"),
     bom_id = md("BOM")
     ) |> 
   fmt_number(
-  columns = c("avg_best_costs", "median_best_costs", "sd_best_costs"),
+  columns = c("median_best_costs", "sd_best_costs"),
   decimals = 0,
   )
 ```
@@ -219,24 +217,26 @@ experiments |>
   ungroup() |> 
   group_by(bom_id, algorithm) |> 
   summarize(abs_min_costs = min(min_costs),
-            avg_best_costs = mean(min_costs),
             median_best_costs = quantile(min_costs, 0.5),
-            sd_best_costs = sd(min_costs),
             n = n()) |> 
-  ungroup() |> 
-  gt() |> 
-   cols_label(
-    avg_best_costs = md("Mean"),
+
+  gt(rowname_col = "algorithm",
+     groupname_col = "bom_id") |> 
+   
+  cols_label(
     median_best_costs = md("Median"),
-    sd_best_costs = md("SD"),
     bom_id = md("BOM"),
     algorithm = md("Algorithm"),
-    abs_min_costs = md("Absolute Best")
+    abs_min_costs = md("Best")
     ) |> 
-  tab_options(
-  table.font.name = "Times New Roman") |> 
-  opt_row_striping()
-
+  
+  fmt_number(
+    columns = c("median_best_costs", "abs_min_costs"),
+    decimals = 0,
+  ) |> 
+  
+  opt_table_font(
+  font = "Times New Roman")
 ```
 
 
